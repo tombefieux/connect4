@@ -44,7 +44,7 @@ public class GameEngine {
 	private void resetGrid() {
 		for (int i = 0 ; i < width; i++)
 			for (int j = 0 ; j < width; j++)
-			this.grid[i][j] = null;
+				this.grid[i][j] = null;
 	}
 	
 	/**
@@ -63,7 +63,7 @@ public class GameEngine {
 				if(grid[i][j] == null)
 					result += " ";
 				else
-					result += grid[i][j].getLabel();
+					result += grid[i][j].getOwner().getPawnLabel();
 					
 				result += "|";
 			}
