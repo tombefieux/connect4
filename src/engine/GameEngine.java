@@ -1,0 +1,34 @@
+package engine;
+
+import entity.Pawn;
+import entity.Player;
+
+/**
+ * This class represents the game engine of the connect 4.
+ * It manages the games and the win and loose system. 
+ */
+public class GameEngine {
+
+	private Pawn[][] grid;		/** The grid of the connect 4 */
+	private Player player1;		/** The first player */
+	private Player player2;		/** The second player */
+	
+	/**
+	 * Constructor of the engine.
+	 * @param width: the width of the grid
+	 * @param height: the height of the grid
+	 */
+	public GameEngine(int width, int height) {
+		// init the grid
+		this.grid = new Pawn[width][];
+		for (int i = 0 ; i < width; i++)
+			this.grid[i] = new Pawn[height];
+	
+		// init player to null
+		this.player1 = null;
+		this.player2 = null;
+	}
+	
+	
+	
+}
