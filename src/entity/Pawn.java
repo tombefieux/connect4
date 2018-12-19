@@ -11,7 +11,7 @@ public class Pawn {
 	 * Constructor.
 	 * @param owner: the owner of the pawn
 	 */
-	public Pawn(String label, Player owner) {
+	public Pawn(Player owner) {
 		super();
 		this.owner = owner;
 	}

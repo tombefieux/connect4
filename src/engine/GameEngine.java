@@ -42,10 +42,30 @@ public class GameEngine {
 	}
 	
 	/**
+	 * Add a pawn at this x.
+	 * @param x: the x value for the grid
+	 * @param pawn: the pawn
+	 */
+	public void addPawn(int x, Pawn pawn) {
+		// see if possible
+		if(!getPossiblesX().contains(x))
+			return;
+		
+		// add it
+		int y = 0;
+		while (y < height && this.grid[x][y] == null)
+			y++;
+		
+		if(y != 0)
+			y--;
+		this.grid[x][y] = pawn;
+	}
+	
+	/**
 	 * This function returns the x that are possibles to play.
 	 * @return the x that are possible (from 0 to ... (the indexes)).
 	 */
-	public List<Integer> getPossiblesX() {
+	private List<Integer> getPossiblesX() {
 		List<Integer> result = new ArrayList<Integer>();
 		
 		// for each line
@@ -108,6 +128,4 @@ public class GameEngine {
 	public void render() {
 		System.out.println(this + "\n");
 	}
-	
-	
 }
