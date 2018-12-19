@@ -1,5 +1,8 @@
 package engine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import entity.Pawn;
 import entity.Player;
 
@@ -39,6 +42,21 @@ public class GameEngine {
 	}
 	
 	/**
+	 * This function returns the x that are possibles to play.
+	 * @return the x that are possible (from 0 to ... (the indexes)).
+	 */
+	public List<Integer> getPossiblesX() {
+		List<Integer> result = new ArrayList<Integer>();
+		
+		// for each line
+		for (int i = 0; i < this.height; i++)
+			if(this.grid[i][0] == null)
+				result.add(i);
+		
+		return result;
+	}
+	
+	/**
 	 * This function resets the grid with null values.
 	 */
 	private void resetGrid() {
@@ -69,6 +87,16 @@ public class GameEngine {
 			}
 			
 			result += "\n";
+			
+			if(j == height - 1) {
+				for (int i = 0; i <= width * 2; i++)
+					result += "-";
+				
+				result += "\n";
+				
+				for (int i = 0; i < width; i++)
+					result += " " + (i + 1);
+			}
 		}
 		
 		return result;
