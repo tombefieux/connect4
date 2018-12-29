@@ -12,11 +12,13 @@ import entity.Player;
  */
 public class GameEngine {
 
-	private Pawn[][] grid;		/** The grid of the connect 4 */
-	private int width;			/** The width of the grid */
-	private int height;			/** The height of the grid */
-	private Player player1;		/** The first player */
-	private Player player2;		/** The second player */
+	private Pawn[][] grid;				/** The grid of the connect 4 */
+	private int width;					/** The width of the grid */
+	private int height;					/** The height of the grid */
+	private Player player1;				/** The first player */
+	private Player player2;				/** The second player */
+	private boolean playerOneTurn;		/** If it's to the player 1 to play. */
+	private boolean gameIsRunning;		/** If a game is running in the engine. */
 	
 	/**
 	 * Constructor of the engine.
@@ -39,8 +41,96 @@ public class GameEngine {
 		// init player to null
 		this.player1 = null;
 		this.player2 = null;
+		
+		this.playerOneTurn = true;
+		this.gameIsRunning = false;
 	}
 	
+	/**
+	 * This function starts a game.
+	 * @param player1: the first player
+	 * @param player2: the second player
+	 */
+	public void start(Player player1, Player player2) {
+		resetGrid();
+		
+		this.player1 = player1;
+		this.player2 = player2;
+		
+		this.playerOneTurn = true;
+		this.gameIsRunning = true;
+	}
+	
+	/**
+	 * This function updates the game engine, it lets play the player for a turn.
+	 */
+	public void newTurn() {
+		
+		// if we haven't start
+		if(this.player1 == null)
+			return;
+		
+		// play (get the x of the pawn)
+		Player currentPlayer;
+		if(this.playerOneTurn)
+			currentPlayer = this.player1;
+		else
+			currentPlayer = this.player2;
+		
+		// get the x
+		int pawnX = -1;
+		List<Integer> possiblesX = getPossiblesX();
+		do {
+			System.out.println("\nA " + currentPlayer.getName() + " de jouer :");	
+			pawnX = currentPlayer.play();
+			
+			// if not possible
+			if(!possiblesX.contains(pawnX)) {
+				System.out.print("Les possibilitées sont : ");
+				for (int i = 0; i < possiblesX.size(); i++)
+					System.out.print((possiblesX.get(i) + 1) + " ");
+				System.out.println("");
+			}
+			
+		} while (!possiblesX.contains(pawnX));
+		
+		// add the pawn
+		addPawn(pawnX, new Pawn(currentPlayer));
+		
+		boolean gameEnded = false;
+		
+		// TODO: see if won with this pawn
+		
+		// if the grid is full
+		possiblesX = getPossiblesX();
+		if(possiblesX.isEmpty()) {
+			System.out.println("Partie nulle ! La grille est remplie sans aucun puissance 4 !");
+			gameEnded = true;
+		}
+		
+		// change the turn
+		this.playerOneTurn = !this.playerOneTurn;
+		
+		// if the game is finished
+		if(gameEnded) endGame();
+	}
+	
+	/**
+	 * Render function for the game engine.
+	 */
+	public void render() {
+		System.out.println(this + "\n");
+	}
+	
+	/**
+	 * This function ends a game for the engine.
+	 */
+	public void endGame() {
+		this.player1 = null;
+		this.player2 = null;
+		this.gameIsRunning = false;
+	}
+
 	/**
 	 * Add a pawn at this x.
 	 * @param x: the x value for the grid
@@ -121,11 +211,12 @@ public class GameEngine {
 		
 		return result;
 	}
-	
+
 	/**
-	 * Render function for the game engine.
+	 * Getter to know if a game is running.
+	 * @return: if a game is running
 	 */
-	public void render() {
-		System.out.println(this + "\n");
+	public boolean isGameRunning() {
+		return gameIsRunning;
 	}
 }
