@@ -31,6 +31,14 @@ public class Player {
 
 		return result - 1; // because we use indexes
 	}
+	
+	/**
+	 * Returns if two players are equals.
+	 * @return if they're equals
+	 */
+	public boolean equals(Object player) {
+		return (this.name.equals(((Player) player).name));
+	}
 
 	/**
 	 * Getter on the name.

@@ -3,6 +3,7 @@ package engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import Connect4.Config;
 import entity.Pawn;
 import entity.Player;
 
@@ -99,12 +100,20 @@ public class GameEngine {
 		
 		boolean gameEnded = false;
 		
-		// TODO: see if won with this pawn
+		// see if won with this pawn
+		if(isWonWith(pawnX, getYWithX(pawnX) + 1)) { // -1 because we've already add the pawn 
+			render();
+			
+			System.out.println("\nPartie gagnée par " + currentPlayer.getName() + " !");
+			gameEnded = true;	
+		}
 		
 		// if the grid is full
 		possiblesX = getPossiblesX();
 		if(possiblesX.isEmpty()) {
-			System.out.println("Partie nulle ! La grille est remplie sans aucun puissance 4 !");
+			render();
+			
+			System.out.println("\nPartie nulle ! La grille est remplie sans aucun puissance 4 !");
 			gameEnded = true;
 		}
 		
@@ -119,7 +128,7 @@ public class GameEngine {
 	 * Render function for the game engine.
 	 */
 	public void render() {
-		System.out.println(this + "\n");
+		System.out.println("\n" + this);
 	}
 	
 	/**
@@ -130,7 +139,179 @@ public class GameEngine {
 		this.player2 = null;
 		this.gameIsRunning = false;
 	}
+	
+	/**
+	 * This function checks if there's a connect 4 with the pawn at (x, y).
+	 * @param x
+	 * @param y
+	 * @return if there's a connect 4
+	 */
+	public boolean isWonWith(int x, int y) {
+		return (checkLine(x, y) ||
+				checkRow(x, y)  ||
+				checkDiagonal(x, y) ||
+				 checkReversedDiagonal(x, y)
+				);
+	}
+	
+	/**
+	 * This function checks if there's a connect4 with the pawn at (x, y) in line.
+	 * @param x
+	 * @param y
+	 * @return if there's a connect 4
+	 */
+	public boolean checkLine(int x, int y) {
+		int cpt = 1;
+		Player owner = this.grid[x][y].getOwner();
+		
+		int startPosition = x - 3;
+		if(startPosition < 0) startPosition = 0;
+		
+		int endPosition = x + 3;
+		if(endPosition >= Config.GRID_WIDTH) endPosition = Config.GRID_WIDTH - 1;
+		
+		for (int i = startPosition; i <= endPosition; i++) {
+			// if not null
+			if(this.grid[i][y] != null) {
+				
+				// if the same owner
+				if(this.grid[i][y].getOwner().equals(owner))
+					cpt++;
+			
+				// else
+				else if (cpt < 4) 
+					cpt = 0;
+			}
+			
+			// if null
+			else if (cpt < 4)
+				cpt = 0;
+		}
+		
+		return (cpt >= 4);
+	}
 
+	/**
+	 * This function checks if there's a connect4 with the pawn at (x, y) in row.
+	 * @param x
+	 * @param y
+	 * @return if there's a connect 4
+	 */
+	public boolean checkRow(int x, int y) {
+		int cpt = 1;
+		Player owner = this.grid[x][y].getOwner();
+		
+		int startPosition = y - 3;
+		if(startPosition < 0) startPosition = 0;
+		
+		int endPosition = y + 3;
+		if(endPosition >= Config.GRID_HEIGHT) endPosition = Config.GRID_HEIGHT - 1;
+		
+		for (int i = startPosition; i <= endPosition; i++) {
+			// if not null
+			if(this.grid[x][i] != null) {
+				
+				// if the same owner
+				if(this.grid[x][i].getOwner().equals(owner))
+					cpt++;
+			
+				// else
+				else if (cpt < 4) 
+					cpt = 0;
+			}
+			
+			// if null
+			else if (cpt < 4)
+				cpt = 0;
+		}
+		
+		return (cpt >= 4);
+	}
+	
+	/**
+	 * This function checks if there's a connect4 with the pawn at (x, y) in diagonal.
+	 * @param x
+	 * @param y
+	 * @return if there's a connect 4
+	 */
+	public boolean checkDiagonal(int x, int y) {
+		int cpt = 1;
+		Player owner = this.grid[x][y].getOwner();
+		
+		for (int i = -3; i < 4; i++) {
+			if(x + i > 0 && x + i < Config.GRID_WIDTH &&
+				y + i > 0 && y + i < Config.GRID_HEIGHT) {
+				
+				// if not null
+				if(this.grid[x + i][y + i] != null) {
+					// if the same owner
+					if(this.grid[x + i][y + i].getOwner().equals(owner))
+						cpt++;
+				
+					// else
+					else if (cpt < 4) 
+						cpt = 0;
+				}
+				
+				// if null
+				else if (cpt < 4)
+					cpt = 0;
+			}
+		}
+		
+		return (cpt >= 4);
+	}
+	
+	/**
+	 * This function checks if there's a connect4 with the pawn at (x, y) in the reversed diagonal.
+	 * @param x
+	 * @param y
+	 * @return if there's a connect 4
+	 */
+	public boolean checkReversedDiagonal(int x, int y) {
+		int cpt = 1;
+		Player owner = this.grid[x][y].getOwner();
+		
+		for (int i = 3; i > -4; i--) {
+			if(x + i > 0 && x + i < Config.GRID_WIDTH &&
+				y - i > 0 && y - i < Config.GRID_HEIGHT) {
+				
+				// if not null
+				if(this.grid[x + i][y - i] != null) {
+					
+					// if the same owner
+					if(this.grid[x + i][y - i].getOwner().equals(owner))
+						cpt++;
+				
+					// else
+					else if (cpt < 4) 
+						cpt = 0;
+				}
+				
+				// if null
+				else if (cpt < 4)
+					cpt = 0;
+			}
+		}
+		
+		return (cpt >= 4);
+	}
+	
+	/**
+	 * This function returns the y where we can drop a pawn in x.
+	 * @param x
+	 * @return the y
+	 */
+	public int getYWithX(int x) {
+		int y = 0;
+		while (y < height && this.grid[x][y] == null)
+			y++;
+		
+		if(y != 0) y--;
+		
+		return y;
+	}
+	
 	/**
 	 * Add a pawn at this x.
 	 * @param x: the x value for the grid
@@ -142,13 +323,7 @@ public class GameEngine {
 			return;
 		
 		// add it
-		int y = 0;
-		while (y < height && this.grid[x][y] == null)
-			y++;
-		
-		if(y != 0)
-			y--;
-		this.grid[x][y] = pawn;
+		this.grid[x][getYWithX(x)] = pawn;
 	}
 	
 	/**

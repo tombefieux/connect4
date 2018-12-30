@@ -45,7 +45,9 @@ public class Connect4 {
 			engine.render();
 			while(engine.isGameRunning()) {
 				engine.newTurn();
-				engine.render();
+				
+				if(engine.isGameRunning())
+					engine.render();
 			}
 			
 			// ask if we want to start a new game
@@ -59,6 +61,7 @@ public class Connect4 {
 		}
 		
 		sc.close();
+		System.out.println("\nAu revoir !");
 	}
 
 }
