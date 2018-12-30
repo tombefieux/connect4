@@ -162,32 +162,28 @@ public class GameEngine {
 	 */
 	public boolean checkLine(int x, int y) {
 		int cpt = 1;
+		boolean stopLeft = false, stopRight = false;
 		Player owner = this.grid[x][y].getOwner();
 		
-		int startPosition = x - 3;
-		if(startPosition < 0) startPosition = 0;
-		
-		int endPosition = x + 3;
-		if(endPosition >= Config.GRID_WIDTH) endPosition = Config.GRID_WIDTH - 1;
-		
-		for (int i = startPosition; i <= endPosition; i++) {
-			// if not null
-			if(this.grid[i][y] != null) {
-				
-				// if the same owner
-				if(this.grid[i][y].getOwner().equals(owner))
-					cpt++;
+		for (int i = 1; i <= 3 && (!stopLeft || !stopRight); i++) {
 			
-				// else
-				else if (cpt < 4) 
-					cpt = 0;
+			// check on the left of the pawn
+			if(x - i >= 0 && !stopLeft) {
+				if(this.grid[x - i][y] != null && this.grid[x - i][y].getOwner().equals(owner))
+					cpt++;
+				else
+					stopLeft = true;
 			}
 			
-			// if null
-			else if (cpt < 4)
-				cpt = 0;
+			// check on the right of the pawn
+			if(x + i < Config.GRID_WIDTH && !stopRight) {
+				if(this.grid[x + i][y] != null && this.grid[x + i][y].getOwner().equals(owner))
+					cpt++;
+				else
+					stopRight = true;
+			}
 		}
-		
+	
 		return (cpt >= 4);
 	}
 
@@ -199,30 +195,26 @@ public class GameEngine {
 	 */
 	public boolean checkRow(int x, int y) {
 		int cpt = 1;
+		boolean stopTop = false, stopBottom = false;
 		Player owner = this.grid[x][y].getOwner();
 		
-		int startPosition = y - 3;
-		if(startPosition < 0) startPosition = 0;
-		
-		int endPosition = y + 3;
-		if(endPosition >= Config.GRID_HEIGHT) endPosition = Config.GRID_HEIGHT - 1;
-		
-		for (int i = startPosition; i <= endPosition; i++) {
-			// if not null
-			if(this.grid[x][i] != null) {
-				
-				// if the same owner
-				if(this.grid[x][i].getOwner().equals(owner))
-					cpt++;
+		for (int i = 1; i <= 3 && (!stopTop || !stopBottom); i++) {
 			
-				// else
-				else if (cpt < 4) 
-					cpt = 0;
+			// check on the top of the pawn
+			if(y - i >= 0 && !stopTop) {
+				if(this.grid[x][y - i] != null && this.grid[x][y - i].getOwner().equals(owner))
+					cpt++;
+				else
+					stopTop = true;
 			}
 			
-			// if null
-			else if (cpt < 4)
-				cpt = 0;
+			// check on the bottom of the pawn
+			if(y + i < Config.GRID_HEIGHT && !stopBottom) {
+				if(this.grid[x][y + i] != null && this.grid[x][y + i].getOwner().equals(owner))
+					cpt++;
+				else
+					stopBottom = true;
+			}
 		}
 		
 		return (cpt >= 4);
@@ -236,26 +228,25 @@ public class GameEngine {
 	 */
 	public boolean checkDiagonal(int x, int y) {
 		int cpt = 1;
+		boolean stopTopLeft = false, stopBottomRight = false;
 		Player owner = this.grid[x][y].getOwner();
 		
-		for (int i = -3; i < 4; i++) {
-			if(x + i > 0 && x + i < Config.GRID_WIDTH &&
-				y + i > 0 && y + i < Config.GRID_HEIGHT) {
-				
-				// if not null
-				if(this.grid[x + i][y + i] != null) {
-					// if the same owner
-					if(this.grid[x + i][y + i].getOwner().equals(owner))
-						cpt++;
-				
-					// else
-					else if (cpt < 4) 
-						cpt = 0;
-				}
-				
-				// if null
-				else if (cpt < 4)
-					cpt = 0;
+		for (int i = 1; i <= 3 && (!stopTopLeft || !stopBottomRight); i++) {
+			
+			// check on the top left of the pawn
+			if(x - i >= 0 && y - i >= 0 && !stopTopLeft) {
+				if(this.grid[x - i][y - i] != null && this.grid[x - i][y - i].getOwner().equals(owner))
+					cpt++;
+				else
+					stopTopLeft = true;
+			}
+			
+			// check on the bottom right of the pawn
+			if(x + i < Config.GRID_WIDTH && y + i < Config.GRID_HEIGHT && !stopBottomRight) {
+				if(this.grid[x + i][y + i] != null && this.grid[x + i][y + i].getOwner().equals(owner))
+					cpt++;
+				else
+					stopBottomRight = true;
 			}
 		}
 		
@@ -270,27 +261,25 @@ public class GameEngine {
 	 */
 	public boolean checkReversedDiagonal(int x, int y) {
 		int cpt = 1;
+		boolean stopBottomLeft = false, stopTopRight = false;
 		Player owner = this.grid[x][y].getOwner();
 		
-		for (int i = 3; i > -4; i--) {
-			if(x + i > 0 && x + i < Config.GRID_WIDTH &&
-				y - i > 0 && y - i < Config.GRID_HEIGHT) {
-				
-				// if not null
-				if(this.grid[x + i][y - i] != null) {
-					
-					// if the same owner
-					if(this.grid[x + i][y - i].getOwner().equals(owner))
-						cpt++;
-				
-					// else
-					else if (cpt < 4) 
-						cpt = 0;
-				}
-				
-				// if null
-				else if (cpt < 4)
-					cpt = 0;
+		for (int i = 1; i <= 3 && (!stopBottomLeft || !stopTopRight); i++) {
+			
+			// check on the bottom left of the pawn
+			if(x - i >= 0 && y + i < Config.GRID_HEIGHT && !stopBottomLeft) {
+				if(this.grid[x - i][y + i] != null && this.grid[x - i][y + i].getOwner().equals(owner))
+					cpt++;
+				else
+					stopBottomLeft = true;
+			}
+			
+			// check on the top right of the pawn
+			if(x + i < Config.GRID_WIDTH && y - i >= 0 && !stopTopRight) {
+				if(this.grid[x + i][y - i] != null && this.grid[x + i][y - i].getOwner().equals(owner))
+					cpt++;
+				else
+					stopTopRight = true;
 			}
 		}
 		
