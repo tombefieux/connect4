@@ -1,7 +1,19 @@
 package engine;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import Connect4.Config;
 import entity.Pawn;
@@ -11,8 +23,10 @@ import entity.Player;
  * This class represents the game engine of the connect 4.
  * It manages the games and the win and loose system. 
  */
-public class GameEngine {
+public class GameEngine extends JPanel implements MouseListener {
 
+	private static final long serialVersionUID = 1L;
+	
 	private Pawn[][] grid;				/** The grid of the connect 4 */
 	private int width;					/** The width of the grid */
 	private int height;					/** The height of the grid */
@@ -21,12 +35,19 @@ public class GameEngine {
 	private boolean playerOneTurn;		/** If it's to the player 1 to play. */
 	private boolean gameIsRunning;		/** If a game is running in the engine. */
 	
+	// for graphics
+	private Image gridImage;
+	private Image pawn1Image;
+	private Image pawn2Image;
+	
 	/**
 	 * Constructor of the engine.
 	 * @param width: the width of the grid
 	 * @param height: the height of the grid
 	 */
 	public GameEngine(int width, int height) {
+		super();
+		
 		// init the grid
 		this.grid = new Pawn[width][];
 		for (int i = 0 ; i < width; i++) {
@@ -45,7 +66,28 @@ public class GameEngine {
 		
 		this.playerOneTurn = true;
 		this.gameIsRunning = false;
+		
+		// graphics content
+		loadImages();
+		setSize(Config.windowWidth, Config.windowHeight);
+		setBackground(Color.black);
+		setFocusable(true);
+		addMouseListener(this);
 	}
+	
+	/**
+	 * This function load the images needed to render.
+	 */
+	private void loadImages() {
+        ImageIcon iid = new ImageIcon(Config.gridImagePath);
+        this.gridImage = iid.getImage();
+        
+        iid = new ImageIcon(Config.pawn1ImagePath);
+        this.pawn1Image = iid.getImage();
+        
+        iid = new ImageIcon(Config.pawn2ImagePath);
+        this.pawn2Image = iid.getImage();
+    }
 	
 	/**
 	 * This function starts a game.
@@ -53,66 +95,89 @@ public class GameEngine {
 	 * @param player2: the second player
 	 */
 	public void start(Player player1, Player player2) {
-		resetGrid();
+		resetEngine();
 		
 		this.player1 = player1;
 		this.player2 = player2;
 		
 		this.playerOneTurn = true;
 		this.gameIsRunning = true;
+		
+		// go!
+		// newTurn();
 	}
 	
 	/**
-	 * This function updates the game engine, it lets play the player for a turn.
+	 * This function updates the game engine.
 	 */
-	public void newTurn() {
+	public void update() {
 		
-		// if we haven't start
-		if(this.player1 == null)
+		
+		
+		repaint();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+	 */
+	// (function triggered when there's a click)
+	@Override
+	public void mouseClicked(MouseEvent event) {
+		
+		Point p = event.getPoint();
+		
+		// if it's on the grid and it's the turn of a player (not an AI)
+		if(
+				p.x >= Config.gridMarginLeft && p.x <= Config.gridMarginLeft + Config.grigSize &&
+				p.y >= Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25 && p.y <= Config.windowHeight - Config.gridMarginLeft - 25 &&
+				getCurrentPlayer() instanceof Player
+				) {
+			
+			// if we haven't start
+			if(this.player1 == null)
+				return;
+
+			// get the column
+			int pawnColPosition = (p.x - Config.gridMarginLeft) / 60;
+			
+			// if impossible on this column
+			if(!getPossiblesX().contains(pawnColPosition))
+				return;
+
+			// add the pawn
+			addPawn(pawnColPosition, new Pawn(getCurrentPlayer()));
+		}
+	}
+	
+	/**
+	 * Add a pawn at this x.
+	 * After have added the pawn, it checks if the game is ended or not etc...
+	 * @param x: the x value for the grid
+	 * @param pawn: the pawn
+	 */
+	public void addPawn(int x, Pawn pawn) {
+		
+		List<Integer> possiblesX = getPossiblesX();
+		
+		// see if possible
+		if(!possiblesX.contains(x))
 			return;
 		
-		// play (get the x of the pawn)
-		Player currentPlayer;
-		if(this.playerOneTurn)
-			currentPlayer = this.player1;
-		else
-			currentPlayer = this.player2;
-		
-		// get the x
-		int pawnX = -1;
-		List<Integer> possiblesX = getPossiblesX();
-		do {
-			System.out.println("\nA " + currentPlayer.getName() + " de jouer :");	
-			pawnX = currentPlayer.play();
-			
-			// if not possible
-			if(!possiblesX.contains(pawnX)) {
-				System.out.print("Les possibilitées sont : ");
-				for (int i = 0; i < possiblesX.size(); i++)
-					System.out.print((possiblesX.get(i) + 1) + " ");
-				System.out.println("");
-			}
-			
-		} while (!possiblesX.contains(pawnX));
-		
-		// add the pawn
-		addPawn(pawnX, new Pawn(currentPlayer));
+		// add it
+		this.grid[x][getYWithX(x)] = pawn;
 		
 		boolean gameEnded = false;
 		
 		// see if won with this pawn
-		if(isWonWith(pawnX, getYWithX(pawnX) + 1)) { // -1 because we've already add the pawn 
-			render();
-			
-			System.out.println("\nPartie gagnée par " + currentPlayer.getName() + " !");
+		if(isWonWith(x, getYWithX(x) + 1)) { // -1 because we've already add the pawn 
+			System.out.println("\nPartie gagnée par " + getCurrentPlayer().getName() + " !");
 			gameEnded = true;	
 		}
 		
 		// if the grid is full
 		possiblesX = getPossiblesX();
 		if(possiblesX.isEmpty()) {
-			render();
-			
 			System.out.println("\nPartie nulle ! La grille est remplie sans aucun puissance 4 !");
 			gameEnded = true;
 		}
@@ -122,22 +187,92 @@ public class GameEngine {
 		
 		// if the game is finished
 		if(gameEnded) endGame();
+		
+		// actualize the panel graphics
+		repaint();
+		
+		// TODO: FOR THE AI: check if the new current player is an instance of AI and then let it play.
+		/**
+		 * Create a function play which takes the grid and return the x to play. Then, use the add pawn function with the x returned. (not that difficult ;))
+		 */
 	}
+	
+	/**
+	 * This function is an override of the JPanel function to draw our game.
+	 * @param g: graphic object (gave by swing)
+	 */
+	@Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        render(g);
+    }
 	
 	/**
 	 * Render function for the game engine.
 	 */
-	public void render() {
-		System.out.println("\n" + this);
+	public void render(Graphics g) {
+		// TODO: display background
+		
+		// if we're running a game
+		if(isGameRunning()) {
+			// ---- display the pawn under the grid
+			// if the mouse is at the good position
+			Point p = getMousePositionInWindow();
+			if(
+					p.x >= Config.gridMarginLeft && p.x <= Config.gridMarginLeft + Config.grigSize &&
+					p.y >= Config.windowHeight - Config.gridMarginLeft - Config.grigSize && p.y <= Config.windowHeight - Config.gridMarginLeft
+					) {
+				
+				// get the column
+				int pawnColPosition = (p.x - Config.gridMarginLeft) / 60;
+				
+				// if possible on this column
+				if(getPossiblesX().contains(pawnColPosition)){
+					// get the right pawn image
+					Image pawnImage;
+					if(this.playerOneTurn)
+						pawnImage = this.pawn1Image;
+					else
+						pawnImage = this.pawn2Image;
+					
+					// display
+					g.drawImage(pawnImage, Config.gridMarginLeft + pawnColPosition * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize - 40, this);
+				}
+			}
+		}
+			
+		// ---- display all the pawns
+		for(int i = 0; i < Config.GRID_WIDTH; i++) {
+			for(int j = 0; j < Config.GRID_HEIGHT; j++) {
+				if(this.grid[i][j] != null) {
+					if(this.grid[i][j].getOwner().equals(this.player1))
+						g.drawImage(this.pawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+					else
+						g.drawImage(this.pawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+				}
+			}
+		}
+		
+		// display the grid
+		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);		
 	}
 	
 	/**
-	 * This function ends a game for the engine.
+	 * This function ends a game.
 	 */
 	public void endGame() {
+		
+		this.gameIsRunning = false;
+	}
+	
+	/**
+	 * This function resets the engine of previous game.
+	 */
+	public void resetEngine() {
+		resetGrid();
 		this.player1 = null;
 		this.player2 = null;
-		this.gameIsRunning = false;
 	}
 	
 	/**
@@ -302,20 +437,6 @@ public class GameEngine {
 	}
 	
 	/**
-	 * Add a pawn at this x.
-	 * @param x: the x value for the grid
-	 * @param pawn: the pawn
-	 */
-	public void addPawn(int x, Pawn pawn) {
-		// see if possible
-		if(!getPossiblesX().contains(x))
-			return;
-		
-		// add it
-		this.grid[x][getYWithX(x)] = pawn;
-	}
-	
-	/**
 	 * This function returns the x that are possibles to play.
 	 * @return the x that are possible (from 0 to ... (the indexes)).
 	 */
@@ -375,6 +496,24 @@ public class GameEngine {
 		
 		return result;
 	}
+	
+	/**
+	 * This function returns the position of the mouse in the window.
+	 * @return the position of the mouse
+	 */
+	private Point getMousePositionInWindow() {
+		// get the position of the mouse in the window
+		Point p = MouseInfo.getPointerInfo().getLocation();
+		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+		int mouseX = (int) (p.x - topFrame.getLocation().getX());
+		int mouseY = (int) (p.y - topFrame.getLocation().getY());
+		if(mouseX < 0) mouseX = 0;
+		else if (mouseX > Config.windowWidth) mouseX = Config.windowWidth;
+		if(mouseY < 0) mouseY = 0;
+		else if (mouseY > Config.windowHeight - 25) mouseY = Config.windowHeight;
+		
+		return new Point(mouseX, mouseY);
+	}
 
 	/**
 	 * Getter to know if a game is running.
@@ -383,4 +522,45 @@ public class GameEngine {
 	public boolean isGameRunning() {
 		return gameIsRunning;
 	}
+	
+	/**
+	 * Returns the current player.
+	 * @return the current player.
+	 */
+	private Player getCurrentPlayer() {
+		Player currentPlayer;
+		if(this.playerOneTurn)
+			currentPlayer = this.player1;
+		else
+			currentPlayer = this.player2;
+		return currentPlayer;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseEntered(MouseEvent arg0) {}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseExited(MouseEvent arg0) {}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mousePressed(MouseEvent arg0) {}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseReleased(MouseEvent arg0) {}
 }

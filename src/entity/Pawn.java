@@ -31,7 +31,4 @@ public class Pawn {
 	public void setOwner(Player owner) {
 		this.owner = owner;
 	}
-	
-	
-	
 }

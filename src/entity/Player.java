@@ -23,16 +23,6 @@ public class Player {
 	}
 	
 	/**
-	 * This function returns the x that the player want to play.
-	 * @return the x to play.
-	 */
-	public int play() {
-		int result =  Connect4.sc.nextInt();
-
-		return result - 1; // because we use indexes
-	}
-	
-	/**
 	 * Returns if two players are equals.
 	 * @return if they're equals
 	 */
