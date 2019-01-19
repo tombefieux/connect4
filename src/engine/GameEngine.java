@@ -188,9 +188,6 @@ public class GameEngine extends JPanel implements MouseListener {
 		// if the game is finished
 		if(gameEnded) endGame();
 		
-		// actualize the panel graphics
-		repaint();
-		
 		// TODO: FOR THE AI: check if the new current player is an instance of AI and then let it play.
 		/**
 		 * Create a function play which takes the grid and return the x to play. Then, use the add pawn function with the x returned. (not that difficult ;))
@@ -505,7 +502,7 @@ public class GameEngine extends JPanel implements MouseListener {
 		// get the position of the mouse in the window
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-		int mouseX = (int) (p.x - topFrame.getLocation().getX());
+		int mouseX = (int) (p.x - topFrame.getLocation().getX() - 3); // - 3 I don't know why but it's to match with the position returned by the click event 
 		int mouseY = (int) (p.y - topFrame.getLocation().getY());
 		if(mouseX < 0) mouseX = 0;
 		else if (mouseX > Config.windowWidth) mouseX = Config.windowWidth;
