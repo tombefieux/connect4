@@ -1,8 +1,5 @@
 package entity;
 
-
-import Connect4.Connect4;
-
 /**
  * Class that represents a player in the game.
  */

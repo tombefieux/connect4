@@ -102,9 +102,6 @@ public class GameEngine extends JPanel implements MouseListener {
 		
 		this.playerOneTurn = true;
 		this.gameIsRunning = true;
-		
-		// go!
-		// newTurn();
 	}
 	
 	/**
@@ -252,14 +249,14 @@ public class GameEngine extends JPanel implements MouseListener {
 		}
 		
 		// display the grid
-		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);		
+		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);
 	}
 	
 	/**
 	 * This function ends a game.
 	 */
 	public void endGame() {
-		
+		repaint();
 		this.gameIsRunning = false;
 	}
 	
