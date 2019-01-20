@@ -25,22 +25,23 @@ import entity.Player;
  */
 public class GameEngine extends JPanel implements MouseListener {
 
-	private static final long serialVersionUID = 1L;
+	protected static final long serialVersionUID = 1L;
 	
-	private Pawn[][] grid;				/** The grid of the connect 4 */
-	private int width;					/** The width of the grid */
-	private int height;					/** The height of the grid */
-	private Player player1;				/** The first player */
-	private Player player2;				/** The second player */
-	private boolean playerOneTurn;		/** If it's to the player 1 to play. */
-	private boolean gameIsRunning;		/** If a game is running in the engine. */
-	
+	protected Pawn[][] grid;				/** The grid of the connect 4 */
+	protected int width;					/** The width of the grid */
+	protected int height;					/** The height of the grid */
+	protected Player player1;				/** The first player */
+	protected Player player2;				/** The second player */
+	protected boolean playerOneTurn;		/** If it's to the player 1 to play. */
+	protected boolean gameIsRunning;		/** If a game is running in the engine. */
+	protected int pawnColPosition;
+        
 	// for graphics
-	private Image gridImage;
-	private Image pawn1Image;
-	private Image pawn2Image;
-	private Image highlightedPawn1Image;
-	private Image highlightedPawn2Image;
+	protected Image gridImage;
+	protected Image pawn1Image;
+	protected Image pawn2Image;
+	protected Image highlightedPawn1Image;
+	protected Image highlightedPawn2Image;
 	
 	/**
 	 * Constructor of the engine.
@@ -109,7 +110,7 @@ public class GameEngine extends JPanel implements MouseListener {
 		this.player2 = player2;
 		
 		this.playerOneTurn = true;
-		this.gameIsRunning = true;
+		this.gameIsRunning = !this.gameIsRunning;
 	}
 	
 	/**
@@ -144,7 +145,7 @@ public class GameEngine extends JPanel implements MouseListener {
 				return;
 
 			// get the column
-			int pawnColPosition = (p.x - Config.gridMarginLeft) / 60;
+			pawnColPosition = (p.x - Config.gridMarginLeft) / 60;
 			
 			// if impossible on this column
 			if(!getPossiblesX().contains(pawnColPosition))
@@ -578,7 +579,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	 * Returns the current player.
 	 * @return the current player.
 	 */
-	private Player getCurrentPlayer() {
+	public Player getCurrentPlayer() {
 		Player currentPlayer;
 		if(this.playerOneTurn)
 			currentPlayer = this.player1;
@@ -586,6 +587,16 @@ public class GameEngine extends JPanel implements MouseListener {
 			currentPlayer = this.player2;
 		return currentPlayer;
 	}
+        
+        /**
+	 * Returns the player.
+	 * @return the current player.
+	 */
+        
+        public Player getPlayer1() {
+            return player1;
+        }
+        
 
 	/*
 	 * (non-Javadoc)
