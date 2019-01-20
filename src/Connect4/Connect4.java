@@ -1,39 +1,59 @@
 package Connect4;
 
-import java.util.Scanner;
-
 import engine.GameEngine;
 import entity.Player;
 import graphics.MainWindow;
+import graphics.Menu;
 
 public class Connect4 {
 	
-	public static Scanner sc = new Scanner(System.in);
+	// create what we need
+	public static MainWindow window;
+	public static GameEngine engine;
+	public static Menu menu;
+	
+	/**
+	 * This function starts a game with two players.
+	 * @param player1: the first player.
+	 * @param player2: the second player.
+	 */
+	public static void startAGameWithTwoPlayers(Player player1, Player player2) {
+		window.switchToEngine();
+		engine.start(player1, player2);
+		
+		// start the game in a thread
+		Thread t = new Thread() {
+			public void run() {
+				while(engine.isGameRunning()) {
+					engine.update();
+					
+					try {
+						Thread.sleep(1000 / (long) Config.gameFPS);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				window.switchToMenu();
+			}
+		};
+		t.start();
+	}
 
+	/**
+	 * Main function.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		
-		// create the engine
-		GameEngine engine = new GameEngine(Config.GRID_WIDTH, Config.GRID_HEIGHT);
+		// init
+		engine = new GameEngine(Config.GRID_WIDTH, Config.GRID_HEIGHT);
+		menu = new Menu();
+		window = new MainWindow(engine, menu);
 		
-		// create window
-		MainWindow window = new MainWindow();
-
-    	// we set the engine as the panel to draw
-    	window.setCurrentPanel(engine);
+    	// we set the menu as panel to draw
+		window.switchToMenu();
         window.setVisible(true);
-		
-		// actualy start the game without menu
-		engine.start(new Player("Jacques", Config.PLAYER1_LABEL), new Player("Paulette", Config.PLAYER2_LABEL));
-		
-		while(engine.isGameRunning()) {
-			engine.update();
-			
-			try {
-				Thread.sleep(1000 / (long) Config.gameFPS);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 }

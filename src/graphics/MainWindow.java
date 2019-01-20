@@ -1,9 +1,12 @@
 package graphics;
 
+import java.awt.CardLayout;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Connect4.Config;
+import engine.GameEngine;
 
 /**
  * This class represents the window of the game.
@@ -13,12 +16,12 @@ public class MainWindow extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private JPanel currentPanel = null;
-	
+	private JPanel panel;	/** The main panel. */
+		
 	/**
 	 * Constructor.
 	 */
-	public MainWindow() {
+	public MainWindow(GameEngine engine, Menu menu) {
 		super();
 		
 		setResizable(false);
@@ -26,17 +29,25 @@ public class MainWindow extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(Config.windowWidth, Config.windowHeight);
+        
+        this.panel = new JPanel();
+        this.panel.setLayout(new CardLayout());
+        this.panel.add("engine", engine);
+        this.panel.add("menu", menu);
+        this.add(panel);
 	}
 	
 	/**
-	 * This function is a setter for the panel to draw.
-	 * @param panel: the panel to draw
+	 * This function makes the frame drawn the engine.
 	 */
-	public void setCurrentPanel(JPanel panel) {
-		if(this.currentPanel != null)
-			this.remove(this.currentPanel);
-		
-		this.currentPanel = panel;
-		add(this.currentPanel);
+	public void switchToEngine() {
+		((CardLayout) this.panel.getLayout()).show(this.panel, "engine");
+	}
+	
+	/**
+	 * This function makes the frame drawn the menu.
+	 */
+	public void switchToMenu() {
+		((CardLayout) this.panel.getLayout()).show(this.panel, "menu");
 	}
 }
