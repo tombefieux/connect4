@@ -39,6 +39,8 @@ public class GameEngine extends JPanel implements MouseListener {
 	private Image gridImage;
 	private Image pawn1Image;
 	private Image pawn2Image;
+	private Image highlightedPawn1Image;
+	private Image highlightedPawn2Image;
 	
 	/**
 	 * Constructor of the engine.
@@ -87,6 +89,12 @@ public class GameEngine extends JPanel implements MouseListener {
         
         iid = new ImageIcon(Config.pawn2ImagePath);
         this.pawn2Image = iid.getImage();
+        
+        iid = new ImageIcon(Config.hightlightedPawn1ImagePath);
+        this.highlightedPawn1Image = iid.getImage();
+        
+        iid = new ImageIcon(Config.hightlightedPawn2ImagePath);
+        this.highlightedPawn2Image = iid.getImage();
     }
 	
 	/**
@@ -240,10 +248,18 @@ public class GameEngine extends JPanel implements MouseListener {
 		for(int i = 0; i < Config.GRID_WIDTH; i++) {
 			for(int j = 0; j < Config.GRID_HEIGHT; j++) {
 				if(this.grid[i][j] != null) {
-					if(this.grid[i][j].getOwner().equals(this.player1))
-						g.drawImage(this.pawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-					else
-						g.drawImage(this.pawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+					if(this.grid[i][j].getOwner().equals(this.player1)) {
+						if(this.grid[i][j].isHighlighted())
+							g.drawImage(this.highlightedPawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+						else
+							g.drawImage(this.pawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+					}
+					else {
+						if(this.grid[i][j].isHighlighted())
+							g.drawImage(this.highlightedPawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+						else
+							g.drawImage(this.pawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+					}
 				}
 			}
 		}
@@ -285,12 +301,14 @@ public class GameEngine extends JPanel implements MouseListener {
 	
 	/**
 	 * This function checks if there's a connect4 with the pawn at (x, y) in line.
+	 * This function also highlights the winning pawns.
 	 * @param x
 	 * @param y
 	 * @return if there's a connect 4
 	 */
 	public boolean checkLine(int x, int y) {
 		int cpt = 1;
+		int startingX = x;
 		boolean stopLeft = false, stopRight = false;
 		Player owner = this.grid[x][y].getOwner();
 		
@@ -298,8 +316,12 @@ public class GameEngine extends JPanel implements MouseListener {
 			
 			// check on the left of the pawn
 			if(x - i >= 0 && !stopLeft) {
-				if(this.grid[x - i][y] != null && this.grid[x - i][y].getOwner().equals(owner))
+				if(this.grid[x - i][y] != null && this.grid[x - i][y].getOwner().equals(owner)) {
+					if(startingX > x - i)
+						startingX = x - i;
 					cpt++;
+				}
+					
 				else
 					stopLeft = true;
 			}
@@ -313,17 +335,24 @@ public class GameEngine extends JPanel implements MouseListener {
 			}
 		}
 	
+		// if win highlight
+		if(cpt >= 4)
+			for (int i = 0; i < cpt; i++)
+				this.grid[startingX + i][y].setHighlighted(true);
+		
 		return (cpt >= 4);
 	}
 
 	/**
 	 * This function checks if there's a connect4 with the pawn at (x, y) in row.
+	 * This function also highlights the winning pawns.
 	 * @param x
 	 * @param y
 	 * @return if there's a connect 4
 	 */
 	public boolean checkRow(int x, int y) {
 		int cpt = 1;
+		int startingY = y;
 		boolean stopTop = false, stopBottom = false;
 		Player owner = this.grid[x][y].getOwner();
 		
@@ -331,8 +360,11 @@ public class GameEngine extends JPanel implements MouseListener {
 			
 			// check on the top of the pawn
 			if(y - i >= 0 && !stopTop) {
-				if(this.grid[x][y - i] != null && this.grid[x][y - i].getOwner().equals(owner))
+				if(this.grid[x][y - i] != null && this.grid[x][y - i].getOwner().equals(owner)) {
+					if(startingY > y - i)
+						startingY = y - i;
 					cpt++;
+				}
 				else
 					stopTop = true;
 			}
@@ -346,17 +378,24 @@ public class GameEngine extends JPanel implements MouseListener {
 			}
 		}
 		
+		// if win highlight
+		if(cpt >= 4)
+			for (int i = 0; i < cpt; i++)
+				this.grid[x][startingY + i].setHighlighted(true);
+		
 		return (cpt >= 4);
 	}
 	
 	/**
 	 * This function checks if there's a connect4 with the pawn at (x, y) in diagonal.
+	 * This function also highlights the winning pawns.
 	 * @param x
 	 * @param y
 	 * @return if there's a connect 4
 	 */
 	public boolean checkDiagonal(int x, int y) {
 		int cpt = 1;
+		int startingX = x;
 		boolean stopTopLeft = false, stopBottomRight = false;
 		Player owner = this.grid[x][y].getOwner();
 		
@@ -364,8 +403,11 @@ public class GameEngine extends JPanel implements MouseListener {
 			
 			// check on the top left of the pawn
 			if(x - i >= 0 && y - i >= 0 && !stopTopLeft) {
-				if(this.grid[x - i][y - i] != null && this.grid[x - i][y - i].getOwner().equals(owner))
+				if(this.grid[x - i][y - i] != null && this.grid[x - i][y - i].getOwner().equals(owner)) {
+					if(startingX > x - i)
+						startingX = x - i;
 					cpt++;
+				}
 				else
 					stopTopLeft = true;
 			}
@@ -379,17 +421,24 @@ public class GameEngine extends JPanel implements MouseListener {
 			}
 		}
 		
+		// if win highlight
+		if(cpt >= 4)
+			for (int i = 0; i < cpt; i++)
+				this.grid[startingX + i][y - (x - startingX) + i].setHighlighted(true);
+		
 		return (cpt >= 4);
 	}
 	
 	/**
 	 * This function checks if there's a connect4 with the pawn at (x, y) in the reversed diagonal.
+	 * This function also highlights the winning pawns.
 	 * @param x
 	 * @param y
 	 * @return if there's a connect 4
 	 */
 	public boolean checkReversedDiagonal(int x, int y) {
 		int cpt = 1;
+		int startingY = y;
 		boolean stopBottomLeft = false, stopTopRight = false;
 		Player owner = this.grid[x][y].getOwner();
 		
@@ -405,12 +454,20 @@ public class GameEngine extends JPanel implements MouseListener {
 			
 			// check on the top right of the pawn
 			if(x + i < Config.GRID_WIDTH && y - i >= 0 && !stopTopRight) {
-				if(this.grid[x + i][y - i] != null && this.grid[x + i][y - i].getOwner().equals(owner))
+				if(this.grid[x + i][y - i] != null && this.grid[x + i][y - i].getOwner().equals(owner)) {
+					if(startingY > y - 1)
+						startingY = y- i;
 					cpt++;
+				}
 				else
 					stopTopRight = true;
 			}
 		}
+		
+		// if win highlight
+		if(cpt >= 4)
+			for (int i = 0; i < cpt; i++)
+				this.grid[x + (y - startingY) - i][startingY + i].setHighlighted(true);
 		
 		return (cpt >= 4);
 	}

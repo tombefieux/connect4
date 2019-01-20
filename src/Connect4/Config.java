@@ -26,5 +26,7 @@ public class Config {
 	// pawn
 	public final static String pawn1ImagePath = imagePath + "pawn1.png";
 	public final static String pawn2ImagePath = imagePath + "pawn2.png";
+	public final static String hightlightedPawn1ImagePath = imagePath + "highlightedPawn1.png";
+	public final static String hightlightedPawn2ImagePath = imagePath + "highlightedPawn2.png";
 	public final static int pawnSize = 60;
 }

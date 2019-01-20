@@ -5,7 +5,8 @@ package entity;
  */
 public class Pawn {
 	
-	private Player owner;	/** The owner of the pawn. */
+	private Player owner;			/** The owner of the pawn. */
+	private boolean highlighted; 	/** If the pawn is highlighted or not. */
 	
 	/**
 	 * Constructor.
@@ -14,6 +15,7 @@ public class Pawn {
 	public Pawn(Player owner) {
 		super();
 		this.owner = owner;
+		this.highlighted = false;
 	}
 
 	/**
@@ -30,5 +32,21 @@ public class Pawn {
 	 */
 	public void setOwner(Player owner) {
 		this.owner = owner;
+	}
+
+	/**
+	 * Getter for the highlight.
+	 * @return
+	 */
+	public boolean isHighlighted() {
+		return highlighted;
+	}
+
+	/**
+	 * Setter for the highlight
+	 * @param highlighted: the new value
+	 */
+	public void setHighlighted(boolean highlighted) {
+		this.highlighted = highlighted;
 	}
 }
