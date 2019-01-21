@@ -6,8 +6,6 @@ import entity.Player;
 import graphics.MainWindow;
 import graphics.Menu;
 
-import java.util.Scanner;
-
 public class Connect4 {
 	
 	// create what we need
@@ -21,10 +19,46 @@ public class Connect4 {
 	 * @param player2: the second player.
 	 */
 	public static void startAGameWithTwoPlayers(Player player1, Player player2) {
-		window.switchToEngine();
+		window.switchToPanel(engine);
 		engine.start(player1, player2);
 		
 		// start the game in a thread
+		runAnEngine(engine);
+	}
+	
+	/**
+	 * This function run the server to host a game.
+	 * @param localPlayer: the local player.
+	 */
+	public static void startToHostAGame(Player localPlayer) {
+		GameEngineOnline engine = new GameEngineOnline(Config.GRID_WIDTH, Config.GRID_HEIGHT);
+		window.switchToPanel(engine);
+		
+		((GameEngineOnline) engine).start(localPlayer);
+		
+		// start the server in a thread
+		runAnEngine(engine);
+	}
+	
+	/**
+	 * This function go to an hosted game.
+	 * @param localPlayer: the local player.
+	 */
+	public static void startToHostAGame(Player localPlayer, String host) {
+		GameEngineOnline engine = new GameEngineOnline(Config.GRID_WIDTH, Config.GRID_HEIGHT, host);
+		window.switchToPanel(engine);
+		
+		((GameEngineOnline) engine).start(localPlayer);
+		
+		// start the server in a thread
+		runAnEngine(engine);
+	}
+	
+	/**
+	 * This function runs an engine.
+	 * @param engine: the engine to run.
+	 */
+	private static void runAnEngine(GameEngine engine) {
 		Thread t = new Thread() {
 			public void run() {
 				while(engine.isGameRunning()) {
@@ -37,7 +71,7 @@ public class Connect4 {
 					}
 				}
 				
-				window.switchToMenu();
+				window.switchToPanel(menu);
 			}
 		};
 		t.start();
@@ -52,13 +86,14 @@ public class Connect4 {
 		// init
 		engine = new GameEngine(Config.GRID_WIDTH, Config.GRID_HEIGHT);
 		menu = new Menu();
-		// window = new MainWindow(engine, menu);
+		window = new MainWindow(engine, menu);
 			
 		// we set the menu as panel to draw
-		// window.switchToEngine();
-		// window.setVisible(true);
-
-        System.out.println("Serez vous l'host de cette partie ? (o/n)");
+		window.switchToPanel(menu);
+		window.setVisible(true);
+		
+		/*
+        System.out.println("Serrez-vous l'host de cette partie ? (o/n)");
         Scanner sc = new Scanner(System.in);
         String result = sc.nextLine();
         if(result.equals("o"))
@@ -103,6 +138,7 @@ public class Connect4 {
                 }
              }
         }
+        */
 	}
 
 }

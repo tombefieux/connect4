@@ -32,22 +32,14 @@ public class MainWindow extends JFrame {
         
         this.panel = new JPanel();
         this.panel.setLayout(new CardLayout());
-        this.panel.add("engine", engine);
-        this.panel.add("menu", menu);
         this.add(panel);
 	}
 	
 	/**
-	 * This function makes the frame drawn the engine.
+	 * This function changes the panel to draw in the frame.
 	 */
-	public void switchToEngine() {
-		((CardLayout) this.panel.getLayout()).show(this.panel, "engine");
-	}
-	
-	/**
-	 * This function makes the frame drawn the menu.
-	 */
-	public void switchToMenu() {
-		((CardLayout) this.panel.getLayout()).show(this.panel, "menu");
+	public void switchToPanel(JPanel panel) {
+		this.panel.add("temp", panel);
+		((CardLayout) this.panel.getLayout()).show(this.panel, "temp");
 	}
 }

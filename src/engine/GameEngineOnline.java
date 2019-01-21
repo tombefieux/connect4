@@ -7,6 +7,7 @@ import java.io.*;
 import Connect4.Config;
 import engine.GameEngine;
 import entity.Pawn;
+import entity.Player;
 
 import java.awt.Graphics;
 import java.awt.Point;
@@ -33,7 +34,7 @@ public class GameEngineOnline extends GameEngine{
         super(width, height);
         
         try {
-	        ss = new ServerSocket(1996);
+	        ss = new ServerSocket(Config.onlineServerPort);
 	        soc = ss.accept();
 	        soc.setSoTimeout(Config.maxWaitingTimeForTurn);
 	        Output = new PrintWriter(soc.getOutputStream(), true);
@@ -41,6 +42,8 @@ public class GameEngineOnline extends GameEngine{
         }
         catch(IOException e){
             e.printStackTrace();
+            
+            // TODO: error gesture
         }
     }
 
@@ -55,7 +58,7 @@ public class GameEngineOnline extends GameEngine{
 	   this.playerOneTurn= false;
 
 	    try {   
-		    soc = new Socket(host,1996);
+		    soc = new Socket(host, Config.onlineServerPort);
 		    soc.setSoTimeout(Config.maxWaitingTimeForTurn);
 		    Output = new PrintWriter(soc.getOutputStream(), true);
 		    otherPlayerReader = new InputStreamReader(soc.getInputStream());
@@ -65,8 +68,31 @@ public class GameEngineOnline extends GameEngine{
 	    }
 	    catch(IOException e){
 	        e.printStackTrace();
+	        
+	        // TODO: error gesture
 	    }
     }
+    
+    /**
+	 * This function here is not usable because we only need the first player so we override.
+	 * -----------------------
+	 * DON'T USE THIS FUNCTION -> Use the start(Player localPlayer) function instead.
+	 * -----------------------
+	 */
+	public void start(Player player1, Player player2) {
+		start(player1);
+	}
+	
+	/**
+	 * This function starts a game with the local player and get the data for the second player automatically.
+	 * @param localPlayer: the local player
+	 */
+	public void start(Player localPlayer) {
+		// TODO: get all the informations concerning the second player
+		Player player2 = new Player("Paulette", Config.PLAYER2_LABEL);
+		
+		super.start(localPlayer, player2);
+	}
     
     /**
 	 * This function updates the game engine.
@@ -188,10 +214,12 @@ public class GameEngineOnline extends GameEngine{
      */
     private void closeConnection() {
     	try {
+    		Output.close();
+    		otherPlayerReader.close();
 			soc.close();
+			
 			if(ss != null)
 				ss.close();
-			ss = null;
 		} 
     	catch (IOException e) {
 			e.printStackTrace();

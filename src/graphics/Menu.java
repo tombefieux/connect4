@@ -23,10 +23,12 @@ public class Menu extends JPanel implements ActionListener {
 	// panels
 	private JPanel firstPanel;						/** The first panel of the menu. */
 	private JPanel twoPlayersPanel; 				/** The panel when we choose 2 players. */
+	private JPanel selectOnlineModePanel;			/** The panel to select the online mode. */
 	
 	// elements
 	private JTextField tfPlayer1Name;				/** The text field to give the name of the player 1. */
 	private JTextField tfPlayer2Name;				/** The text field to give the name of the player 2. */
+	private JTextField tfHostName;					/** The text field to give the name of the host. */
 	
 
 	/**
@@ -49,11 +51,13 @@ public class Menu extends JPanel implements ActionListener {
 		// build all the panel
 		buildFirstPanel();
 		buildTwoPlayersPanel();
+		buildSelectOnlineModePanel();
 		
 		// add the panels
 		this.setLayout(new CardLayout());
 		this.add("firstPanel", this.firstPanel);
 		this.add("twoPlayersPanel", this.twoPlayersPanel);
+		this.add("selectOnlineModePanel", this.selectOnlineModePanel);
 		
 		// set the first panel by default
 		((CardLayout)this.getLayout()).show(this, "firstPanel");
@@ -67,7 +71,7 @@ public class Menu extends JPanel implements ActionListener {
 		this.firstPanel.setPreferredSize(this.getSize());
 		this.firstPanel.setLayout(null);
 
-		//create the buttons
+		// create the buttons
 		Button bt1Player = new Button("Un joueur");
 		bt1Player.setBounds(550, 100, 250, 40);
 		bt1Player.addActionListener(this);
@@ -92,7 +96,7 @@ public class Menu extends JPanel implements ActionListener {
 		this.twoPlayersPanel.setPreferredSize(this.getSize());
 		this.twoPlayersPanel.setLayout(null);
 		
-		//create the inputs
+		// create the inputs
 		Button btRetour = new Button("Retour au menu");
 		btRetour.setBounds(20, 20, 150, 30);
 		btRetour.addActionListener(this);
@@ -120,6 +124,42 @@ public class Menu extends JPanel implements ActionListener {
 		this.twoPlayersPanel.add(lbP2);
 		this.twoPlayersPanel.add(this.tfPlayer2Name);
 		this.twoPlayersPanel.add(btPlay);
+	}
+	
+	/**
+	 * This function build the panel to select the online mode.
+	 */
+	private void buildSelectOnlineModePanel() {
+		this.selectOnlineModePanel = new JPanel();
+		this.selectOnlineModePanel.setPreferredSize(this.getSize());
+		this.selectOnlineModePanel.setLayout(null);
+		
+		// create the inputs
+		Button btRetour = new Button("Retour au menu");
+		btRetour.setBounds(20, 20, 150, 30);
+		btRetour.addActionListener(this);
+		
+		// TODO: display IP when we host a game
+		Button btHost = new Button("Héberger une partie");
+		btHost.setBounds(550, 100, 250, 40);
+		btHost.addActionListener(this);
+		
+		Label lbP1 = new Label("Adresse IP de l'host :");
+		lbP1.setBounds(550, 180, 250, 25);
+		
+		this.tfHostName = new JTextField();
+		this.tfHostName.setBounds(550, 210, 250, 25);
+		
+		Button btPlay = new Button("Rejoindre la partie");
+		btPlay.setBounds(550, 250, 250, 40);
+		btPlay.addActionListener(this);
+		
+		// add them
+		this.selectOnlineModePanel.add(btRetour);
+		this.selectOnlineModePanel.add(btHost);
+		this.selectOnlineModePanel.add(lbP1);
+		this.selectOnlineModePanel.add(this.tfHostName);
+		this.selectOnlineModePanel.add(btPlay);
 	}
 
 	/**
@@ -159,6 +199,22 @@ public class Menu extends JPanel implements ActionListener {
 				player2Name += "(2)";
 			
 			Connect4.startAGameWithTwoPlayers(new Player(player1Name, Config.PLAYER1_LABEL), new Player(player2Name, Config.PLAYER2_LABEL));
+		}
+		
+		// go to online
+		else if (button.getLabel().equals("Partie en ligne"))
+			((CardLayout)this.getLayout()).show(this, "selectOnlineModePanel");
+		
+		// host a game 
+		else if(button.getLabel().equals("Héberger une partie")) {
+			// TODO: get the local player with the account
+			Connect4.startToHostAGame(new Player("Foo", Config.PLAYER1_LABEL));
+		}
+		
+		// play on an hosted game 
+		else if(button.getLabel().equals("Rejoindre la partie")) {
+			// TODO: get the local player with the account
+			Connect4.startToHostAGame(new Player("Foo", Config.PLAYER1_LABEL), this.tfHostName.getText());
 		}
 	}
 	
