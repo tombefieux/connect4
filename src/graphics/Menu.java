@@ -106,12 +106,14 @@ public class Menu extends JPanel implements ActionListener {
 		
 		this.tfPlayer1Name = new JTextField();
 		this.tfPlayer1Name.setBounds(550, 130, 250, 25);
+		this.tfPlayer1Name.setText("Joueur1");
 		
 		Label lbP2 = new Label("Nom du joueur 2 :");
 		lbP2.setBounds(550, 170, 250, 25);
 		
 		this.tfPlayer2Name = new JTextField();
 		this.tfPlayer2Name.setBounds(550, 200, 250, 25);
+		this.tfPlayer2Name.setText("Joueur2");
 		
 		Button btPlay = new Button("Jouer !");
 		btPlay.setBounds(550, 350, 250, 40);
@@ -183,16 +185,16 @@ public class Menu extends JPanel implements ActionListener {
 			String player1Name;
 			if(this.tfPlayer1Name.getText().isEmpty())
 				player1Name = "Joueur1";
-			else if(this.tfPlayer1Name.getText().length() > 25)
-				player1Name = this.tfPlayer1Name.getText().substring(0, 25);
+			else if(this.tfPlayer1Name.getText().length() > 20)
+				player1Name = this.tfPlayer1Name.getText().substring(0, 20);
 			else
 				player1Name = this.tfPlayer1Name.getText();
 			
 			String player2Name;
 			if(this.tfPlayer2Name.getText().isEmpty())
 				player2Name = "Joueur2";
-			else if(this.tfPlayer2Name.getText().length() > 25)
-				player2Name = this.tfPlayer2Name.getText().substring(0, 25);
+			else if(this.tfPlayer2Name.getText().length() > 20)
+				player2Name = this.tfPlayer2Name.getText().substring(0, 20);
 			else
 				player2Name = this.tfPlayer2Name.getText();
 			if(player2Name.equals(player1Name))

@@ -11,7 +11,6 @@ import entity.Player;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Point;
 
@@ -61,6 +60,8 @@ public class GameEngineOnline extends GameEngine{
 			
 			e1.printStackTrace();
 		}
+        
+        build();
     }
 
     /**
@@ -87,6 +88,8 @@ public class GameEngineOnline extends GameEngine{
 	        
 	        // TODO: error gesture
 	    }
+	    
+	    build();
     }
     
     /**
@@ -137,6 +140,15 @@ public class GameEngineOnline extends GameEngine{
 		}
 	}
     
+	/**
+	 * This function display the turn in the engine.
+	 * @param g: the graphics by swing
+	 */
+	protected void displayTurn(Graphics g) {
+		if(soc != null)
+			super.displayTurn(g);
+	}
+	
     /**
      * This function listens the socket.
      * @return the value gave by the socket
@@ -251,17 +263,20 @@ public class GameEngineOnline extends GameEngine{
      * This function closes the connection.
      */
     private void closeConnection() {
-    	try {
-    		Output.close();
-    		otherPlayerReader.close();
-			soc.close();
-			
-			if(ss != null)
-				ss.close();
-		} 
-    	catch (IOException e) {
-			e.printStackTrace();
-		}
+    	if(this.stopEngine) {
+	    	try {
+	    		if(soc != null) {
+		    		Output.close();
+		    		otherPlayerReader.close();
+					soc.close();
+	    		}
+	    		if(ss != null)
+					ss.close();
+			} 
+	    	catch (IOException e) {
+				e.printStackTrace();
+			}
+    	}
     }
 
 }

@@ -6,7 +6,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Connect4.Config;
-import engine.GameEngine;
 
 /**
  * This class represents the window of the game.
@@ -21,7 +20,7 @@ public class MainWindow extends JFrame {
 	/**
 	 * Constructor.
 	 */
-	public MainWindow(GameEngine engine, Menu menu) {
+	public MainWindow() {
 		super();
 		
 		setResizable(false);

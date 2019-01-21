@@ -10,8 +10,9 @@ public class Connect4 {
 	
 	// create what we need
 	public static MainWindow window;
-	public static GameEngine engine;
-	public static Menu menu;
+	public static Menu menu = new Menu();
+	
+	public static boolean anEngineIsRunning = false;
 	
 	/**
 	 * This function starts a game with two players.
@@ -19,6 +20,7 @@ public class Connect4 {
 	 * @param player2: the second player.
 	 */
 	public static void startAGameWithTwoPlayers(Player player1, Player player2) {
+		GameEngine engine = new GameEngine(Config.GRID_WIDTH, Config.GRID_HEIGHT);
 		window.switchToPanel(engine);
 		engine.start(player1, player2);
 		
@@ -59,9 +61,14 @@ public class Connect4 {
 	 * @param engine: the engine to run.
 	 */
 	private static void runAnEngine(GameEngine engine) {
+		if(anEngineIsRunning)
+			return;
+		
+		anEngineIsRunning = true;
+		
 		Thread t = new Thread() {
 			public void run() {
-				while(engine.isGameRunning()) {
+				while(!engine.isStopped()) {
 					engine.update();
 					
 					try {
@@ -71,6 +78,7 @@ public class Connect4 {
 					}
 				}
 				
+				anEngineIsRunning = false;
 				window.switchToPanel(menu);
 			}
 		};
@@ -83,12 +91,8 @@ public class Connect4 {
 	 */
 	public static void main(String[] args) {
 		
-		// init
-		engine = new GameEngine(Config.GRID_WIDTH, Config.GRID_HEIGHT);
-		menu = new Menu();
-		window = new MainWindow(engine, menu);
-			
 		// we set the menu as panel to draw
+		window = new MainWindow();
 		window.switchToPanel(menu);
 		window.setVisible(true);
 		

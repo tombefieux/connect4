@@ -1,10 +1,14 @@
 package engine;
 
+import java.awt.Button;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	protected boolean playerOneTurn;		/** If it's to the player 1 to play. */
 	protected boolean gameIsRunning;		/** If a game is running in the engine. */
 	protected int currentPawnColPosition;	/** The current position of the pawn. */
+	protected boolean stopEngine = true;	/** If the engine must be stopped. */
         
 	// for graphics
 	protected Image gridImage;
@@ -69,6 +74,7 @@ public class GameEngine extends JPanel implements MouseListener {
 		
 		this.playerOneTurn = true;
 		this.gameIsRunning = false;
+		this.stopEngine = false;
 		
 		// graphics content
 		loadImages();
@@ -76,6 +82,25 @@ public class GameEngine extends JPanel implements MouseListener {
 		setBackground(Color.black);
 		setFocusable(true);
 		addMouseListener(this);
+		
+		build();
+	}
+	
+	/**
+	 * This function builds graphics elements.
+	 */
+	protected void build() {
+		// return button
+		Button btRetour = new Button("Retour au menu");
+		btRetour.setBounds(600, 400, 150, 30);
+		btRetour.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				 quitEngine();
+			}
+		});
+		this.setLayout(null);
+		this.add(btRetour);
 	}
 	
 	/**
@@ -111,6 +136,7 @@ public class GameEngine extends JPanel implements MouseListener {
 		
 		this.playerOneTurn = true;
 		this.gameIsRunning = !this.gameIsRunning;
+		this.stopEngine = false;
 	}
 	
 	/**
@@ -193,8 +219,9 @@ public class GameEngine extends JPanel implements MouseListener {
 			gameEnded = true;
 		}
 		
-		// change the turn
-		this.playerOneTurn = !this.playerOneTurn;
+		// change the turn if we continue
+		if(!gameEnded)
+			this.playerOneTurn = !this.playerOneTurn;
 		
 		// if the game is finished
 		if(gameEnded) endGame();
@@ -219,13 +246,11 @@ public class GameEngine extends JPanel implements MouseListener {
 	/**
 	 * Render function for the game engine.
 	 */
-	public void render(Graphics g) {
-		// TODO: display background
-		
-		// ---- display the pawn above the grid
+	public void render(Graphics g) {		
+		// display the pawn above the grid
 		displayPawnAboveGrid(g);
 			
-		// ---- display all the pawns
+		// display all the pawns
 		for(int i = 0; i < Config.GRID_WIDTH; i++) {
 			for(int j = 0; j < Config.GRID_HEIGHT; j++) {
 				if(this.grid[i][j] != null) {
@@ -247,6 +272,9 @@ public class GameEngine extends JPanel implements MouseListener {
 		
 		// display the grid
 		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);
+		
+		// display the turn
+		displayTurn(g);
 	}
 	
 	/**
@@ -283,6 +311,35 @@ public class GameEngine extends JPanel implements MouseListener {
 	}
 	
 	/**
+	 * This function display the turn in the engine.
+	 * @param g: the graphics by swing
+	 */
+	protected void displayTurn(Graphics g) {
+		if(this.gameIsRunning) {
+			Font font = g.getFont();
+			Color color = g.getColor();
+			g.setFont(font.deriveFont((float) 30));
+			g.setColor(new Color(0, 255, 0));
+			g.drawString("Au tour de :", 525, 150);
+			g.drawString(getCurrentPlayer().getName(), 525, 190);
+			g.setColor(new Color(0, 255, 0));
+			g.setFont(font);
+			g.setColor(color);
+		}
+		else {
+			Font font = g.getFont();
+			Color color = g.getColor();
+			g.setFont(font.deriveFont((float) 30));
+			g.setColor(new Color(0, 255, 0));
+			g.drawString("Partie gagnée par :", 525, 150);
+			g.drawString(getCurrentPlayer().getName(), 525, 190);
+			g.setColor(new Color(0, 255, 0));
+			g.setFont(font);
+			g.setColor(color);
+		}
+	}
+	
+	/**
 	 * This function ends a game.
 	 */
 	public void endGame() {
@@ -297,6 +354,8 @@ public class GameEngine extends JPanel implements MouseListener {
 		resetGrid();
 		this.player1 = null;
 		this.player2 = null;
+		
+		this.stopEngine = true;
 	}
 	
 	/**
@@ -481,7 +540,7 @@ public class GameEngine extends JPanel implements MouseListener {
 		// if win highlight
 		if(cpt >= 4)
 			for (int i = 0; i < cpt; i++)
-				this.grid[x + (y - startingY) - i][startingY + i].setHighlighted(true);
+				this.grid[x + (y - startingY) - i][startingY + i].setHighlighted(true); // TODO:fix index out of bounds
 		
 		return (cpt >= 4);
 	}
@@ -589,6 +648,22 @@ public class GameEngine extends JPanel implements MouseListener {
 	}
 	
 	/**
+	 * Getter to know if the game engine is done.
+	 * @return: if the game engine is done.
+	 */
+	public boolean isStopped() {
+		return this.stopEngine;
+	}
+	
+	/**
+	 * To properly quit the engine.
+	 */
+	public void quitEngine() {
+		this.stopEngine = true;
+		endGame();
+	}
+	
+	/**
 	 * Returns the current player.
 	 * @return the current player.
 	 */
@@ -599,17 +674,7 @@ public class GameEngine extends JPanel implements MouseListener {
 		else
 			currentPlayer = this.player2;
 		return currentPlayer;
-	}
-        
-        /**
-	 * Returns the player.
-	 * @return the current player.
-	 */
-        
-        public Player getPlayer1() {
-            return player1;
-        }
-        
+	}        
 
 	/*
 	 * (non-Javadoc)
