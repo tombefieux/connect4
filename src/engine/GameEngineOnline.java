@@ -9,6 +9,9 @@ import engine.GameEngine;
 import entity.Pawn;
 import entity.Player;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Point;
 
@@ -34,17 +37,30 @@ public class GameEngineOnline extends GameEngine{
         super(width, height);
         
         try {
-	        ss = new ServerSocket(Config.onlineServerPort);
-	        soc = ss.accept();
-	        soc.setSoTimeout(Config.maxWaitingTimeForTurn);
-	        Output = new PrintWriter(soc.getOutputStream(), true);
-	        otherPlayerReader = new InputStreamReader(soc.getInputStream());
-        }
-        catch(IOException e){
-            e.printStackTrace();
-            
-            // TODO: error gesture
-        }
+			ss = new ServerSocket(Config.onlineServerPort);
+			soc = null;
+	        Thread t = new Thread() {
+				public void run() {
+					try {
+						soc = ss.accept();
+				        soc.setSoTimeout(Config.maxWaitingTimeForTurn);
+				        Output = new PrintWriter(soc.getOutputStream(), true);
+				        otherPlayerReader = new InputStreamReader(soc.getInputStream());
+					}
+			    	catch (IOException e) {
+			    		// TODO: error gesture
+			    		
+			    		endGame();
+					}
+				}
+			};
+			t.start();
+		}
+		catch (IOException e1) {
+			// TODO: error gesture
+			
+			e1.printStackTrace();
+		}
     }
 
     /**
@@ -103,6 +119,25 @@ public class GameEngineOnline extends GameEngine{
 	}
     
     /**
+	 * Render function for the game engine.
+	 */
+	public void render(Graphics g) {
+		super.render(g);
+		
+		// not connected
+		if(soc == null) {
+			Font font = g.getFont();
+			Color color = g.getColor();
+			g.setFont(font.deriveFont((float) 30));
+			g.setColor(new Color(0, 255, 0));
+			g.drawString("En attente du joueur...", 115, 325);
+			g.setColor(new Color(0, 255, 0));
+			g.setFont(font);
+			g.setColor(color);
+		}
+	}
+    
+    /**
      * This function listens the socket.
      * @return the value gave by the socket
      */
@@ -152,6 +187,9 @@ public class GameEngineOnline extends GameEngine{
      */
     @Override
     public void addPawn(int x, Pawn pawn) {
+    	if(soc == null)
+    		return;
+    	
     	super.addPawn(x, pawn);
     	
     	if(!isMyTurn()) {
@@ -183,7 +221,7 @@ public class GameEngineOnline extends GameEngine{
 	 */
     @Override
 	public void displayPawnAboveGrid(Graphics g) {
-		if(isMyTurn())
+		if(soc != null && isMyTurn())
 			super.displayPawnAboveGrid(g);
 	}
     
