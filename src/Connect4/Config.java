@@ -16,6 +16,8 @@ public class Config {
 	public static final int windowWidth = 900;
 	public static final int windowHeight = 600;
 	
+	public static final int maxWaitingTimeForTurn = 20000; 
+	
 	public final static String imagePath = "src/images/";
 	
 	// the grid

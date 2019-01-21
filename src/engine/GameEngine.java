@@ -34,7 +34,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	protected Player player2;				/** The second player */
 	protected boolean playerOneTurn;		/** If it's to the player 1 to play. */
 	protected boolean gameIsRunning;		/** If a game is running in the engine. */
-	protected int pawnColPosition;
+	protected int currentPawnColPosition;	/** The current position of the pawn. */
         
 	// for graphics
 	protected Image gridImage;
@@ -116,10 +116,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	/**
 	 * This function updates the game engine.
 	 */
-	public void update() {
-		
-		
-		
+	public void update() {		
 		repaint();
 	}
 	
@@ -139,21 +136,29 @@ public class GameEngine extends JPanel implements MouseListener {
 				p.y >= Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25 && p.y <= Config.windowHeight - Config.gridMarginLeft - 25 &&
 				getCurrentPlayer() instanceof Player
 				) {
-			
-			// if we haven't start
-			if(this.player1 == null)
-				return;
-
-			// get the column
-			pawnColPosition = (p.x - Config.gridMarginLeft) / 60;
-			
-			// if impossible on this column
-			if(!getPossiblesX().contains(pawnColPosition))
-				return;
-
-			// add the pawn
-			addPawn(pawnColPosition, new Pawn(getCurrentPlayer()));
+			gridClicked(p);	
 		}
+	}
+	
+	/**
+	 * This function is called when the grid is clicked.
+	 * @param p: the mouse click position
+	 */
+	protected void gridClicked(Point p) {
+		
+		// if we are not in a game
+		if(!isGameRunning())
+			return;
+
+		// get the column
+		currentPawnColPosition = (p.x - Config.gridMarginLeft) / 60;
+		
+		// if impossible on this column
+		if(!getPossiblesX().contains(currentPawnColPosition))
+			return;
+
+		// add the pawn
+		addPawn(currentPawnColPosition, new Pawn(getCurrentPlayer()));
 	}
 	
 	/**
@@ -217,9 +222,40 @@ public class GameEngine extends JPanel implements MouseListener {
 	public void render(Graphics g) {
 		// TODO: display background
 		
+		// ---- display the pawn above the grid
+		displayPawnAboveGrid(g);
+			
+		// ---- display all the pawns
+		for(int i = 0; i < Config.GRID_WIDTH; i++) {
+			for(int j = 0; j < Config.GRID_HEIGHT; j++) {
+				if(this.grid[i][j] != null) {
+					if(this.grid[i][j].getOwner().equals(this.player1)) {
+						if(this.grid[i][j].isHighlighted())
+							g.drawImage(this.highlightedPawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+						else
+							g.drawImage(this.pawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+					}
+					else {
+						if(this.grid[i][j].isHighlighted())
+							g.drawImage(this.highlightedPawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+						else
+							g.drawImage(this.pawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
+					}
+				}
+			}
+		}
+		
+		// display the grid
+		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);
+	}
+	
+	/**
+	 * This function draw the pawn above the grid.
+	 * @param g: the graphics object
+	 */
+	public void displayPawnAboveGrid(Graphics g) {
 		// if we're running a game
 		if(isGameRunning()) {
-			// ---- display the pawn under the grid
 			// if the mouse is at the good position
 			Point p = getMousePositionInWindow();
 			if(
@@ -244,29 +280,6 @@ public class GameEngine extends JPanel implements MouseListener {
 				}
 			}
 		}
-			
-		// ---- display all the pawns
-		for(int i = 0; i < Config.GRID_WIDTH; i++) {
-			for(int j = 0; j < Config.GRID_HEIGHT; j++) {
-				if(this.grid[i][j] != null) {
-					if(this.grid[i][j].getOwner().equals(this.player1)) {
-						if(this.grid[i][j].isHighlighted())
-							g.drawImage(this.highlightedPawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-						else
-							g.drawImage(this.pawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-					}
-					else {
-						if(this.grid[i][j].isHighlighted())
-							g.drawImage(this.highlightedPawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-						else
-							g.drawImage(this.pawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-					}
-				}
-			}
-		}
-		
-		// display the grid
-		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);
 	}
 	
 	/**
@@ -492,7 +505,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	 * This function returns the x that are possibles to play.
 	 * @return the x that are possible (from 0 to ... (the indexes)).
 	 */
-	private List<Integer> getPossiblesX() {
+	protected List<Integer> getPossiblesX() {
 		List<Integer> result = new ArrayList<Integer>();
 		
 		// for each line
