@@ -191,17 +191,14 @@ public class GameEngine extends JPanel implements MouseListener {
 		boolean gameEnded = false;
 		
 		// see if won with this pawn
-		if(isWonWith(x, getYWithX(x) + 1)) { // -1 because we've already add the pawn 
-			System.out.println("\nPartie gagnée par " + getCurrentPlayer().getName() + " !");
+		if(isWonWith(x, getYWithX(x) + 1)) // -1 because we've already add the pawn 
 			gameEnded = true;	
-		}
+
 		
 		// if the grid is full
 		possiblesX = getPossiblesX();
-		if(possiblesX.isEmpty()) {
-			System.out.println("\nPartie nulle ! La grille est remplie sans aucun puissance 4 !");
+		if(possiblesX.isEmpty())
 			gameEnded = true;
-		}
 		
 		// change the turn if we continue
 		if(!gameEnded)
@@ -294,6 +291,16 @@ public class GameEngine extends JPanel implements MouseListener {
 			g.setColor(new Color(0, 255, 0));
 			g.drawString("Au tour de :", 525, 150);
 			g.drawString(getCurrentPlayer().getName(), 525, 190);
+			g.setColor(new Color(0, 255, 0));
+			g.setFont(font);
+			g.setColor(color);
+		}
+		else if(getPossiblesX().isEmpty()) {
+			Font font = g.getFont();
+			Color color = g.getColor();
+			g.setFont(font.deriveFont((float) 30));
+			g.setColor(new Color(0, 255, 0));
+			g.drawString("Partie nulle !", 525, 150);
 			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
@@ -512,7 +519,7 @@ public class GameEngine extends JPanel implements MouseListener {
 		// if win highlight
 		if(cpt >= 4)
 			for (int i = 0; i < cpt; i++)
-				this.grid[x + (y - startingY) - i][startingY + i].setHighlighted(true); // TODO:fix index out of bounds
+				this.grid[x + (y - startingY) - i][startingY + i].setHighlighted(true);
 		
 		return (cpt >= 4);
 	}

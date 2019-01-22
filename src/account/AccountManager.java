@@ -57,12 +57,21 @@ public class AccountManager {
 	 * NOTE: the created account is automatically logged in the manager.
 	 * @param login: the login
 	 * @param password: the password (not encrypted)
+	 * @return if the account have been created
 	 */
-	public void createNewAccount(String login, char[] password) {
+	public boolean createNewAccount(String login, char[] password) {
+		// already an account with this login
+		if(getAccountByLogin(login) != null) {
+			JOptionPane.showMessageDialog(new JFrame(), "Login déja utilisé par un autre compte.", "Erreur", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		
 		PasswordAuthentication pswAuth = new PasswordAuthentication();
 		Account account = new Account(login, pswAuth.hash(password), 0, PawnName.BasicPawn1);
 		this.accounts.add(account);
 		this.connectedAccount = account;
+		
+		return true;
 	}
 	
 	/**

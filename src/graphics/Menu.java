@@ -41,6 +41,7 @@ public class Menu extends JPanel implements ActionListener {
 	private JTextField tfLoginCA;					/** The login in the create account panel. */
 	private JPasswordField tfPasswordCA;			/** The password in the create account panel. */
 	private JPasswordField tfPasswordConfCA;		/** The confirmation of the password in the create account panel. */
+	private Label nbPoint;							/** The label of the number of points. */
 	
 
 	/**
@@ -245,6 +246,9 @@ public class Menu extends JPanel implements ActionListener {
 		btRetour.setBounds(20, 20, 200, 30);
 		btRetour.addActionListener(this);
 		
+		this.nbPoint = new Label();
+		this.nbPoint.setBounds(20, 60, 200, 25);
+		
 		Button btHost = new Button("Héberger une partie");
 		btHost.setBounds(550, 100, 250, 40);
 		btHost.addActionListener(this);
@@ -275,6 +279,7 @@ public class Menu extends JPanel implements ActionListener {
 		this.selectOnlineModePanel.add(btPlay);
 		this.selectOnlineModePanel.add(btShop);
 		this.selectOnlineModePanel.add(btDel);
+		this.selectOnlineModePanel.add(this.nbPoint);
 	}
 
 	/**
@@ -331,6 +336,7 @@ public class Menu extends JPanel implements ActionListener {
 			else if(Connect4.accountManager.connectToAccount(this.cbAccount.getSelectedItem().toString(), this.tfPassword.getPassword())) {
 				this.tfPassword.setText("");
 				((CardLayout)this.getLayout()).show(this, "selectOnlineModePanel");
+				refreshNbPoints();
 			}
 		}
 		
@@ -344,13 +350,13 @@ public class Menu extends JPanel implements ActionListener {
 				else {
 					if (!(new String(this.tfPasswordConfCA.getPassword()).equals(new String(this.tfPasswordCA.getPassword()))))
 						JOptionPane.showMessageDialog(this, "Les deux mots de passes ne sont pas identiques.", "Erreur", JOptionPane.ERROR_MESSAGE);
-					else {
-						Connect4.accountManager.createNewAccount(this.tfLoginCA.getText(), this.tfPasswordCA.getPassword());
+					else if (Connect4.accountManager.createNewAccount(this.tfLoginCA.getText(), this.tfPasswordCA.getPassword())) {
 						refreshCBAccount();
 						this.tfLoginCA.setText("");
 						this.tfPasswordCA.setText("");
 						this.tfPasswordConfCA.setText("");
 						((CardLayout)this.getLayout()).show(this, "selectOnlineModePanel");
+						refreshNbPoints();
 					}
 				}
 			}
@@ -381,9 +387,16 @@ public class Menu extends JPanel implements ActionListener {
 	/**
 	 * This function refresh the combo box with the accounts.
 	 */
-	private void refreshCBAccount() {
+	public void refreshCBAccount() {
 		this.cbAccount.removeAllItems();
 		for(String s: Connect4.accountManager.getLogins())
 			this.cbAccount.addItem(s);
+	}
+	
+	/**
+	 * This function refresh the label of number of points with the current account. 
+	 */
+	public void refreshNbPoints() {
+		this.nbPoint.setText("Nombre de points : " + Connect4.accountManager.getConnectedAccount().getPoints());
 	}
 }
