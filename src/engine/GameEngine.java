@@ -43,10 +43,6 @@ public class GameEngine extends JPanel implements MouseListener {
         
 	// for graphics
 	protected Image gridImage;
-	protected Image pawn1Image;
-	protected Image pawn2Image;
-	protected Image highlightedPawn1Image;
-	protected Image highlightedPawn2Image;
 	
 	/**
 	 * Constructor of the engine.
@@ -109,18 +105,6 @@ public class GameEngine extends JPanel implements MouseListener {
 	private void loadImages() {
         ImageIcon iid = new ImageIcon(Config.gridImagePath);
         this.gridImage = iid.getImage();
-        
-        iid = new ImageIcon(Config.pawn1ImagePath);
-        this.pawn1Image = iid.getImage();
-        
-        iid = new ImageIcon(Config.pawn2ImagePath);
-        this.pawn2Image = iid.getImage();
-        
-        iid = new ImageIcon(Config.hightlightedPawn1ImagePath);
-        this.highlightedPawn1Image = iid.getImage();
-        
-        iid = new ImageIcon(Config.hightlightedPawn2ImagePath);
-        this.highlightedPawn2Image = iid.getImage();
     }
 	
 	/**
@@ -251,25 +235,15 @@ public class GameEngine extends JPanel implements MouseListener {
 		displayPawnAboveGrid(g);
 			
 		// display all the pawns
-		// TODO: change it using the enum
-		for(int i = 0; i < Config.GRID_WIDTH; i++) {
-			for(int j = 0; j < Config.GRID_HEIGHT; j++) {
-				if(this.grid[i][j] != null) {
-					if(this.grid[i][j].getOwner().equals(this.player1)) {
-						if(this.grid[i][j].isHighlighted())
-							g.drawImage(this.highlightedPawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-						else
-							g.drawImage(this.pawn1Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-					}
-					else {
-						if(this.grid[i][j].isHighlighted())
-							g.drawImage(this.highlightedPawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-						else
-							g.drawImage(this.pawn2Image, Config.gridMarginLeft + i * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35, this);
-					}
-				}
-			}
-		}
+		for(int i = 0; i < Config.GRID_WIDTH; i++)
+			for(int j = 0; j < Config.GRID_HEIGHT; j++)
+				if(this.grid[i][j] != null)
+					g.drawImage(
+								Config.getImageOfPawn(this.grid[i][j].getOwner().getPawnName(), this.grid[i][j].isHighlighted()),
+								Config.gridMarginLeft + i * Config.pawnSize,
+								Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35,
+								this
+							);
 		
 		// display the grid
 		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);
@@ -296,17 +270,14 @@ public class GameEngine extends JPanel implements MouseListener {
 				int pawnColPosition = (p.x - Config.gridMarginLeft) / 60;
 				
 				// if possible on this column
-				if(getPossiblesX().contains(pawnColPosition)){
-					// get the right pawn image
-					Image pawnImage;
-					if(this.playerOneTurn)
-						pawnImage = this.pawn1Image;
-					else
-						pawnImage = this.pawn2Image;
-					
-					// display
-					g.drawImage(pawnImage, Config.gridMarginLeft + pawnColPosition * Config.pawnSize, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize - 40, this);
-				}
+				if(getPossiblesX().contains(pawnColPosition))
+					g.drawImage(
+								Config.getImageOfPawn(getCurrentPlayer().getPawnName(), false),
+								Config.gridMarginLeft + pawnColPosition * Config.pawnSize,
+								Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize - 40,
+								this
+							);
+				
 			}
 		}
 	}
