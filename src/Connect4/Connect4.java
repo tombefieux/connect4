@@ -10,9 +10,9 @@ import graphics.Menu;
 public class Connect4 {
 	
 	// create what we need
+	public static Menu menu;
+	public static AccountManager accountManager;
 	public static MainWindow window;
-	public static Menu menu = new Menu();
-	public static AccountManager accountManager = new AccountManager();
 	
 	public static boolean anEngineIsRunning = false;
 	
@@ -92,59 +92,13 @@ public class Connect4 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
 		// we set the menu as panel to draw
+		accountManager = new AccountManager();
+		menu = new Menu();
 		window = new MainWindow();
+		
 		window.switchToPanel(menu);
 		window.setVisible(true);
-		
-		/*
-        System.out.println("Serrez-vous l'host de cette partie ? (o/n)");
-        Scanner sc = new Scanner(System.in);
-        String result = sc.nextLine();
-        if(result.equals("o"))
-        {
-            System.out.println("En attente d'un joueur...");
-            
-            // create the engine
-            GameEngineOnline engineT = new GameEngineOnline(Config.GRID_WIDTH, Config.GRID_HEIGHT);
-            
-            window = new MainWindow(engineT, menu);
-            window.switchToEngine();
-    		window.setVisible(true);
-            
-    		engineT.start(new Player("Jacques", Config.PLAYER1_LABEL), new Player("Paulette", Config.PLAYER2_LABEL));
-           
-            while(engineT.isGameRunning()) {
-            	engineT.update();
-                
-                try {
-                        Thread.sleep(1000 / (long) Config.gameFPS);
-                } catch (InterruptedException e) {
-                        e.printStackTrace();
-                }
-            }
-        }
-        else{
-            GameEngineOnline engineT = new GameEngineOnline(Config.GRID_WIDTH, Config.GRID_HEIGHT, "localhost");
-            
-            window = new MainWindow(engineT, menu);
-            window.switchToEngine();
-    		window.setVisible(true);
-            
-    		engineT.start(new Player("Jacques", Config.PLAYER1_LABEL), new Player("Paulette", Config.PLAYER2_LABEL));
-    		
-             while(engineT.isGameRunning()) {
-            	 engineT.update();
-                
-                try {
-                        Thread.sleep(1000 / (long) Config.gameFPS);
-                } catch (InterruptedException e) {
-                        e.printStackTrace();
-                }
-             }
-        }
-        */
 	}
 
 }

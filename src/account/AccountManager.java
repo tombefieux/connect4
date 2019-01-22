@@ -5,14 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.xml.bind.DatatypeConverter;
 
 import Connect4.Config;
 import entity.PawnName;
@@ -40,16 +37,18 @@ public class AccountManager {
 	 * @param password: the password of the account (not encrypted)
 	 * @return if the account is logged-in or not
 	 */
-	public boolean connectToAccount(String login, String password) {
+	public boolean connectToAccount(String login, char[] password) {
 		Account account = getAccountByLogin(login);
 		if(account == null)
 			return false;
 		
-		if(getMD5Hash(password).equals(account.getPassword())) {
+		PasswordAuthentication pswAuth = new PasswordAuthentication();		
+		if(pswAuth.authenticate(password, account.getPassword())) {
 			this.connectedAccount = account;
 			return true;
 		}
 		
+    	JOptionPane.showMessageDialog(new JFrame(), "Mot de passe incorrecte.", "Erreur", JOptionPane.ERROR_MESSAGE);
 		return false;	
 	}
 	
@@ -59,8 +58,19 @@ public class AccountManager {
 	 * @param login: the login
 	 * @param password: the password (not encrypted)
 	 */
-	public void createNewAccount(String login, String password) {
-		this.accounts.add(new Account(login, getMD5Hash(password), 0, PawnName.BasicPawn1));
+	public void createNewAccount(String login, char[] password) {
+		PasswordAuthentication pswAuth = new PasswordAuthentication();
+		Account account = new Account(login, pswAuth.hash(password), 0, PawnName.BasicPawn1);
+		this.accounts.add(account);
+		this.connectedAccount = account;
+	}
+	
+	/**
+	 * This function delete the current logged account.
+	 */
+	public void deleteCurrentAccount() {
+		this.accounts.remove(this.connectedAccount);
+		this.connectedAccount = null;
 	}
 	
 	/**
@@ -101,6 +111,9 @@ public class AccountManager {
         } catch (Exception e) {
         	JOptionPane.showMessageDialog(new JFrame(), "Erreur lors de la lecture des comptes en ligne, impossible de les charger.", "Erreur", JOptionPane.ERROR_MESSAGE);
         }
+		
+		if(this.accounts == null)
+			this.accounts = new ArrayList<Account>();
 	}
 	
 	/**
@@ -134,25 +147,4 @@ public class AccountManager {
 	public Account getConnectedAccount() {
 		return this.connectedAccount;
 	}
-	
-	/**
-	 * This function returns the text parameter hashed in MD5.
-	 * @param text: the text to hash
-	 * @return the hashed text
-	 */
-	public static String getMD5Hash(String text) {
-		try {
-			MessageDigest md;
-			md = MessageDigest.getInstance("MD5");
-			md.update(text.getBytes());
-		    byte[] digest = md.digest();
-		    
-		    return DatatypeConverter.printHexBinary(digest).toUpperCase();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-	    
-	    return "";
-	}
-	
 }
