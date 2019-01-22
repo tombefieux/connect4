@@ -1,5 +1,6 @@
 package Connect4;
 
+import account.AccountManager;
 import engine.GameEngine;
 import engine.GameEngineOnline;
 import entity.Player;
@@ -11,6 +12,7 @@ public class Connect4 {
 	// create what we need
 	public static MainWindow window;
 	public static Menu menu = new Menu();
+	public static AccountManager accountManager = new AccountManager();
 	
 	public static boolean anEngineIsRunning = false;
 	

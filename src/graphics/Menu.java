@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 
 import Connect4.Config;
 import Connect4.Connect4;
+import entity.PawnName;
 import entity.Player;
 
 /**
@@ -200,7 +201,7 @@ public class Menu extends JPanel implements ActionListener {
 			if(player2Name.equals(player1Name))
 				player2Name += "(2)";
 			
-			Connect4.startAGameWithTwoPlayers(new Player(player1Name, Config.PLAYER1_LABEL), new Player(player2Name, Config.PLAYER2_LABEL));
+			Connect4.startAGameWithTwoPlayers(new Player(player1Name, PawnName.BasicPawn1), new Player(player2Name, PawnName.BasicPawn2));
 		}
 		
 		// go to online
@@ -210,13 +211,13 @@ public class Menu extends JPanel implements ActionListener {
 		// host a game 
 		else if(button.getLabel().equals("Héberger une partie")) {
 			// TODO: get the local player with the account
-			Connect4.startToHostAGame(new Player("Foo", Config.PLAYER1_LABEL));
+			Connect4.startToHostAGame(new Player("Foo", PawnName.BasicPawn1));
 		}
 		
 		// play on an hosted game 
 		else if(button.getLabel().equals("Rejoindre la partie")) {
 			// TODO: get the local player with the account
-			Connect4.startToHostAGame(new Player("Foo", Config.PLAYER1_LABEL), this.tfHostName.getText());
+			Connect4.startToHostAGame(new Player("Foo", PawnName.BasicPawn1), this.tfHostName.getText());
 		}
 	}
 	

@@ -10,16 +10,16 @@ public class Config {
 	public static final int GRID_WIDTH = 7;
 	public static final int GRID_HEIGHT = 7;
 	
-	public static final char PLAYER1_LABEL = 'X';
-	public static final char PLAYER2_LABEL = 'Y';
-	
 	public static final int windowWidth = 900;
 	public static final int windowHeight = 600;
 	
 	public static final int maxWaitingTimeForTurn = 20000;
 	public static final int onlineServerPort = 4866;
 	
-	public final static String imagePath = "src/images/";
+	public final static String imagePath = "images/";
+	public final static String savingPath = "save/";
+	
+	public final static String AccountsSerialFileName = "accounts.bin";
 	
 	// the grid
 	public final static String gridImagePath = imagePath + "grid.png";

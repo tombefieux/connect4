@@ -6,17 +6,17 @@ package entity;
 public class Player {
 	
 	private String name; 		/** The name of the player. */
-	private char pawnLabel; 	/** The label for the pawns of the player */
-
+	private PawnName pawnName;	/** The name of the pawn. */
 	
 	/**
 	 * The constructor.
 	 * @param name: its name
+	 * @param pawnName: the name of his pawns
 	 */
-	public Player(String name, char pawnLabel) {
+	public Player(String name, PawnName pawnName) {
 		super();
 		this.name = name;
-		this.pawnLabel = pawnLabel;
+		this.pawnName = pawnName;
 	}
 	
 	/**
@@ -28,7 +28,7 @@ public class Player {
 	}
 
 	/**
-	 * Getter on the name.
+	 * Getter of the name.
 	 * @return the name
 	 */
 	public String getName() {
@@ -44,18 +44,18 @@ public class Player {
 	}
 
 	/**
-	 * Getter on the pawnLabel.
-	 * @return: the pawnLabel
+	 * Getter of the pawn name.
+	 * @return the pawn name
 	 */
-	public char getPawnLabel() {
-		return pawnLabel;
+	public PawnName getPawnName() {
+		return pawnName;
 	}
 
 	/**
-	 * Setter for the pawn label.
-	 * @param pawnLabel: the new pawn label
+	 * Setter for the pawn name.
+	 * @param name: the new pawn name
 	 */
-	public void setPawnLabel(char pawnLabel) {
-		this.pawnLabel = pawnLabel;
+	public void setPawnName(PawnName pawnName) {
+		this.pawnName = pawnName;
 	}
 }

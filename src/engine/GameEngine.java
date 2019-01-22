@@ -251,6 +251,7 @@ public class GameEngine extends JPanel implements MouseListener {
 		displayPawnAboveGrid(g);
 			
 		// display all the pawns
+		// TODO: change it using the enum
 		for(int i = 0; i < Config.GRID_WIDTH; i++) {
 			for(int j = 0; j < Config.GRID_HEIGHT; j++) {
 				if(this.grid[i][j] != null) {
@@ -599,8 +600,12 @@ public class GameEngine extends JPanel implements MouseListener {
 				
 				if(grid[i][j] == null)
 					result += " ";
-				else
-					result += grid[i][j].getOwner().getPawnLabel();
+				else {
+					if(grid[i][j].getOwner().equals(player1))
+						result += "X";
+					else
+						result += "Y";
+				}
 					
 				result += "|";
 			}

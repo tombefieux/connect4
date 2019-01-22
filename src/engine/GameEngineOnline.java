@@ -7,6 +7,7 @@ import java.io.*;
 import Connect4.Config;
 import engine.GameEngine;
 import entity.Pawn;
+import entity.PawnName;
 import entity.Player;
 
 import java.awt.Color;
@@ -108,7 +109,7 @@ public class GameEngineOnline extends GameEngine{
 	 */
 	public void start(Player localPlayer) {
 		// TODO: get all the informations concerning the second player
-		Player player2 = new Player("Paulette", Config.PLAYER2_LABEL);
+		Player player2 = new Player("Paulette", PawnName.BasicPawn2);
 		
 		super.start(localPlayer, player2);
 	}

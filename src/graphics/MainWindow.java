@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Connect4.Config;
+import Connect4.Connect4;
 
 /**
  * This class represents the window of the game.
@@ -32,6 +33,14 @@ public class MainWindow extends JFrame {
         this.panel = new JPanel();
         this.panel.setLayout(new CardLayout());
         this.add(panel);
+        
+        // to save the accounts when the window is closed
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+    	    @Override
+    	    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+    	        Connect4.accountManager.saveAccounts();
+    	    }
+    	});
 	}
 	
 	/**

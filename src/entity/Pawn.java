@@ -4,7 +4,7 @@ package entity;
  * Class that represents a pawn in the game.
  */
 public class Pawn {
-	
+		
 	private Player owner;			/** The owner of the pawn. */
 	private boolean highlighted; 	/** If the pawn is highlighted or not. */
 	
