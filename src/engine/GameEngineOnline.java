@@ -51,6 +51,18 @@ public class GameEngineOnline extends GameEngine{
 			        soc.setSoTimeout(Config.maxWaitingTimeForTurn);
 			        Output = new PrintWriter(soc.getOutputStream(), true);
 			        otherPlayerReader = new InputStreamReader(soc.getInputStream());
+			        
+			        // get informations about the second player
+			        BufferedReader reader = new BufferedReader(otherPlayerReader);
+			        String result = reader.readLine();
+			        player2 = new Player(result.substring(0, result.indexOf(0)), PawnName.valueOf(result.substring(result.indexOf(0) + 1)));
+			        
+			        // send ours
+			        Output.println(player1.getName() + (char) 0 + player1.getPawnName());
+		        	Output.flush();
+		        	
+		        	checkPbWithPlayers();
+			        
 			        startTimer();
 				}
 		    	catch (IOException e) {
@@ -84,8 +96,6 @@ public class GameEngineOnline extends GameEngine{
 	    otherPlayerReader = new InputStreamReader(soc.getInputStream());
 	    
 	    startTimer();
-	
-	    startListen();
 	    
 	    build();
     }
@@ -105,10 +115,33 @@ public class GameEngineOnline extends GameEngine{
 	 * @param localPlayer: the local player
 	 */
 	public void start(Player localPlayer) {
-		// TODO: get all the informations concerning the second player
 		
-		Player player2 = new Player("Paulette", PawnName.BasicPawn2);
-		super.start(localPlayer, player2);
+		// the client send its informations and then receive the informations of the server
+		if(ss == null) {
+			BufferedReader reader = new BufferedReader(otherPlayerReader);
+			
+			Output.println(localPlayer.getName() + (char) 0 + localPlayer.getPawnName());
+        	Output.flush();
+        	
+	        try {
+	        	String result = reader.readLine();
+		        player2 = new Player(result.substring(0, result.indexOf(0)), PawnName.valueOf(result.substring(result.indexOf(0) + 1)));
+				
+				startListen();
+				
+				super.start(player2, localPlayer);
+				
+			} catch (IOException e) {
+    			JOptionPane.showMessageDialog(new JFrame(), "Erreur lors de la récupération des informations sur le joueur.", "Erreur", JOptionPane.ERROR_MESSAGE);
+				quitEngine();
+			}   
+		}
+		
+		// for the server
+		else
+			super.start(localPlayer, player2);
+		
+		checkPbWithPlayers();
 	}
     
     /**
@@ -221,7 +254,6 @@ public class GameEngineOnline extends GameEngine{
     	Thread t = new Thread() {
 			public void run() {
 				try {
-					System.out.println("listen ");
 			    	String Message = listen();
 			        if(gameIsRunning && !Message.isEmpty())
 		        	{
@@ -394,4 +426,15 @@ public class GameEngineOnline extends GameEngine{
 		this.timerValue = Config.maxWaitingTimeForTurn;
     }
 
+    /**
+     * This function checks if there are problems with the player: if they have the same pawn.
+     */
+    private void checkPbWithPlayers() {
+    	// same pawns
+    	if(this.player2 != null && this.player1.getPawnName().equals(this.player2.getPawnName())) {
+    		JOptionPane.showMessageDialog(new JFrame(), "Vous avez sélectionné les mêmes pions, vous allez donc avoir les pions basiques.", "Attention", JOptionPane.INFORMATION_MESSAGE);
+    		this.player1.setPawnName(PawnName.BasicPawn1);
+    		this.player2.setPawnName(PawnName.BasicPawn2);
+    	}
+    }
 }
