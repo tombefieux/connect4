@@ -1,5 +1,11 @@
 package Connect4;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import account.AccountManager;
 import engine.GameEngine;
 import engine.GameEngineOnline;
@@ -35,27 +41,43 @@ public class Connect4 {
 	 * @param localPlayer: the local player.
 	 */
 	public static void startToHostAGame(Player localPlayer) {
-		GameEngineOnline engine = new GameEngineOnline(Config.GRID_WIDTH, Config.GRID_HEIGHT);
-		window.switchToPanel(engine);
-		
-		((GameEngineOnline) engine).start(localPlayer);
-		
-		// start the server in a thread
-		runAnEngine(engine);
+		GameEngineOnline engine;
+		try {
+			engine = new GameEngineOnline(Config.GRID_WIDTH, Config.GRID_HEIGHT);
+			
+			window.switchToPanel(engine);
+			
+			((GameEngineOnline) engine).start(localPlayer);
+			
+			// start the server in a thread
+			runAnEngine(engine);
+			
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(new JFrame(), "Impossible d'héberger une partie.", "Erreur", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	/**
 	 * This function go to an hosted game.
 	 * @param localPlayer: the local player.
 	 */
-	public static void startToHostAGame(Player localPlayer, String host) {
-		GameEngineOnline engine = new GameEngineOnline(Config.GRID_WIDTH, Config.GRID_HEIGHT, host);
-		window.switchToPanel(engine);
-		
-		((GameEngineOnline) engine).start(localPlayer);
-		
-		// start the server in a thread
-		runAnEngine(engine);
+	public static void goToAnHostedGame(Player localPlayer, String host) {
+		GameEngineOnline engine;
+		try {
+			engine = new GameEngineOnline(Config.GRID_WIDTH, Config.GRID_HEIGHT, host);
+			
+			window.switchToPanel(engine);
+			
+			((GameEngineOnline) engine).start(localPlayer);
+			
+			// start the server in a thread
+			runAnEngine(engine);
+			
+		} catch (UnknownHostException e) {
+			JOptionPane.showMessageDialog(new JFrame(), "L'hôte que vous avez renseigné n'héberge pas de partie.", "Erreur", JOptionPane.ERROR_MESSAGE);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(new JFrame(), "Impossible de rejoindre la partie.", "Erreur", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	/**

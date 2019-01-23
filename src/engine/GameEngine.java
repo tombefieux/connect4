@@ -250,7 +250,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * This function draw the pawn above the grid.
+	 * This function draws the pawn above the grid.
 	 * @param g: the graphics object
 	 */
 	public void displayPawnAboveGrid(Graphics g) {
@@ -285,15 +285,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	 */
 	protected void displayTurn(Graphics g) {
 		if(this.gameIsRunning) {
-			Font font = g.getFont();
-			Color color = g.getColor();
-			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
-			g.drawString("Au tour de :", 525, 150);
-			g.drawString(getCurrentPlayer().getName(), 525, 190);
-			g.setColor(new Color(0, 255, 0));
-			g.setFont(font);
-			g.setColor(color);
+			displayPlayerTurn(g);
 		}
 		else if(getPossiblesX().isEmpty()) {
 			Font font = g.getFont();
@@ -316,6 +308,22 @@ public class GameEngine extends JPanel implements MouseListener {
 			g.setFont(font);
 			g.setColor(color);
 		}
+	}
+	
+	/**
+	 * This function display the name of the player that must play.
+	 * @param g: graphics by swing
+	 */
+	protected void displayPlayerTurn(Graphics g) {
+		Font font = g.getFont();
+		Color color = g.getColor();
+		g.setFont(font.deriveFont((float) 30));
+		g.setColor(new Color(0, 255, 0));
+		g.drawString("Au tour de :", 525, 150);
+		g.drawString(getCurrentPlayer().getName(), 525, 190);
+		g.setColor(new Color(0, 255, 0));
+		g.setFont(font);
+		g.setColor(color);
 	}
 	
 	/**

@@ -2,6 +2,10 @@
 package engine;
 
 import java.net.*;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import java.io.*;
 
 import Connect4.Config;
@@ -22,47 +26,43 @@ public class GameEngineOnline extends GameEngine{
         
 	private static final long serialVersionUID = 1L; 	// to fix warning
 	
-	private ServerSocket ss = null;						/** The socket server. */
-    private Socket soc;									/** The socket. */
-    private PrintWriter Output;							/** The output of the socket. */
-    private InputStreamReader otherPlayerReader;		/** The input of the socket. */
+	private ServerSocket ss = null;								/** The socket server. */
+    private Socket soc;											/** The socket. */
+    private PrintWriter Output;									/** The output of the socket. */
+    private InputStreamReader otherPlayerReader;				/** The input of the socket. */
+    private float timerValue = Config.maxWaitingTimeForTurn;	/** The value of the timer in ms. */
+    private boolean startTimer = false;							/** If the timer is started or not. */
     
     /**
      * Constructor to set the engine as a server.
      * @param width: the width
      * @param height: the height
+     * @throws IOException: if we can't start the server. 
      */
-    public GameEngineOnline(int width, int height)
+    public GameEngineOnline(int width, int height) throws IOException
     {
         super(width, height);
-        
-        try {
-			ss = new ServerSocket(Config.onlineServerPort);
-			soc = null;
-	        Thread t = new Thread() {
-				public void run() {
-					try {
-						soc = ss.accept();
-				        soc.setSoTimeout(Config.maxWaitingTimeForTurn);
-				        Output = new PrintWriter(soc.getOutputStream(), true);
-				        otherPlayerReader = new InputStreamReader(soc.getInputStream());
-					}
-			    	catch (IOException e) {
-			    		// TODO: error gesture
-			    		
-			    		endGame();
-					}
+		ss = new ServerSocket(Config.onlineServerPort);
+		soc = null;
+        Thread t = new Thread() {
+			public void run() {
+				try {
+					soc = ss.accept();
+			        soc.setSoTimeout(Config.maxWaitingTimeForTurn);
+			        Output = new PrintWriter(soc.getOutputStream(), true);
+			        otherPlayerReader = new InputStreamReader(soc.getInputStream());
+			        startTimer();
 				}
-			};
-			t.start();
-		}
-		catch (IOException e1) {
-			// TODO: error gesture
-			
-			e1.printStackTrace();
-		}
-        
-        build();
+		    	catch (IOException e) {
+		    		if(ss == null)
+		    			JOptionPane.showMessageDialog(new JFrame(), "Impossible d'héberger une partie.", "Erreur", JOptionPane.ERROR_MESSAGE);
+					quitEngine();
+				}
+			}
+		};
+		t.start();
+    
+		build();
     }
 
     /**
@@ -70,25 +70,22 @@ public class GameEngineOnline extends GameEngine{
      * @param width: the width
      * @param height: the height
      * @param host: the host to connect with
+     * @throws IOException: can't listen
+     * @throws UnknownHostException: impossible to connect to the host
      */
-    public GameEngineOnline(int width, int height, String host){
-	   super(width, height);
-	   this.playerOneTurn= false;
+    public GameEngineOnline(int width, int height, String host) throws UnknownHostException, IOException{
+    	super(width, height);
+    	this.playerOneTurn = false;
 
-	    try {   
-		    soc = new Socket(host, Config.onlineServerPort);
-		    soc.setSoTimeout(Config.maxWaitingTimeForTurn);
-		    Output = new PrintWriter(soc.getOutputStream(), true);
-		    otherPlayerReader = new InputStreamReader(soc.getInputStream());
-		    
-		    // TODO: enable to connect exception
-		    startListen();
-	    }
-	    catch(IOException e){
-	        e.printStackTrace();
-	        
-	        // TODO: error gesture
-	    }
+    	ss = null;
+    	soc = new Socket(host, Config.onlineServerPort);
+	    soc.setSoTimeout(Config.maxWaitingTimeForTurn);
+	    Output = new PrintWriter(soc.getOutputStream(), true);
+	    otherPlayerReader = new InputStreamReader(soc.getInputStream());
+	    
+	    startTimer();
+	
+	    startListen();
 	    
 	    build();
     }
@@ -109,8 +106,8 @@ public class GameEngineOnline extends GameEngine{
 	 */
 	public void start(Player localPlayer) {
 		// TODO: get all the informations concerning the second player
-		Player player2 = new Player("Paulette", PawnName.BasicPawn2);
 		
+		Player player2 = new Player("Paulette", PawnName.BasicPawn2);
 		super.start(localPlayer, player2);
 	}
     
@@ -118,8 +115,18 @@ public class GameEngineOnline extends GameEngine{
 	 * This function updates the game engine.
 	 */
     @Override
-	public void update() {		
+	public void update() {
 		super.update();
+		
+		if(this.startTimer && this.gameIsRunning) {
+			if(this.timerValue > 0)
+				this.timerValue -= 1000 / (long) Config.gameFPS;
+			else if (isMyTurn()) {
+				JOptionPane.showMessageDialog(new JFrame(), "Vous avez mis trop de temps à jouer, vous avez perdu (et oui c'est comme ça papi).", "Information", JOptionPane.INFORMATION_MESSAGE);
+				quitEngine();
+				this.startTimer = false;
+			}
+		}
 	}
     
     /**
@@ -130,14 +137,28 @@ public class GameEngineOnline extends GameEngine{
 		
 		// not connected
 		if(soc == null) {
-			Font font = g.getFont();
-			Color color = g.getColor();
-			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
-			g.drawString("En attente du joueur...", 115, 325);
-			g.setColor(new Color(0, 255, 0));
-			g.setFont(font);
-			g.setColor(color);
+			// for the server
+			if(ss != null) {
+				Font font = g.getFont();
+				Color color = g.getColor();
+				g.setFont(font.deriveFont((float) 30));
+				g.setColor(new Color(0, 255, 0));
+				g.drawString("En attente du joueur...", 115, 325);
+				g.setColor(new Color(0, 255, 0));
+				g.setFont(font);
+				g.setColor(color);
+			}
+			// for the client
+			else {
+				Font font = g.getFont();
+				Color color = g.getColor();
+				g.setFont(font.deriveFont((float) 30));
+				g.setColor(new Color(0, 255, 0));
+				g.drawString("Connexion...", 115, 325);
+				g.setColor(new Color(0, 255, 0));
+				g.setFont(font);
+				g.setColor(color);
+			}
 		}
 	}
     
@@ -146,8 +167,20 @@ public class GameEngineOnline extends GameEngine{
 	 * @param g: the graphics by swing
 	 */
 	protected void displayTurn(Graphics g) {
-		if(soc != null)
+		if(soc != null) {
 			super.displayTurn(g);
+
+			if(this.gameIsRunning) {
+				Font font = g.getFont();
+				Color color = g.getColor();
+				g.setFont(font.deriveFont((float) 20));
+				g.setColor(new Color(0, 255, 0));
+				g.drawString("Plus que " + (((int) (this.timerValue / 1000)) + 1) + "s", 525, 250);
+				g.setColor(new Color(0, 255, 0));
+				g.setFont(font);
+				g.setColor(color);
+			}
+		}
 	}
 	
     /**
@@ -159,14 +192,23 @@ public class GameEngineOnline extends GameEngine{
         String Message = null;
         try {
         	Message = "" + otherPlayerReader.read();
+        	
+        	if(Message.equals("-1")) {
+        		if(this.gameIsRunning)
+            		JOptionPane.showMessageDialog(new JFrame(), "L'adversaire s'est déconnecté.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        		
+            	quitEngine();
+        	}
         }
         catch(SocketTimeoutException e) {
-        	// TODO: too long exception
-        	
-        	closeConnection();
+			JOptionPane.showMessageDialog(new JFrame(), "Le joueur adverse a mis trop de temps à jouer, vous avez donc gagné.", "Information", JOptionPane.INFORMATION_MESSAGE);
+			Connect4.Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
+        	quitEngine();
         }
         catch (IOException e) {
-        	closeConnection();
+        	if(this.gameIsRunning)
+        		JOptionPane.showMessageDialog(new JFrame(), "L'adversaire s'est déconnecté.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        	quitEngine();
         }
         
         return Message;
@@ -179,6 +221,7 @@ public class GameEngineOnline extends GameEngine{
     	Thread t = new Thread() {
 			public void run() {
 				try {
+					System.out.println("listen ");
 			    	String Message = listen();
 			        if(gameIsRunning && !Message.isEmpty())
 		        	{
@@ -187,7 +230,7 @@ public class GameEngineOnline extends GameEngine{
 		        	}
 				}
 		    	catch (NullPointerException e) {
-		    		endGame();
+		    		quitEngine();
 		    	}
 			}
 		};
@@ -205,17 +248,25 @@ public class GameEngineOnline extends GameEngine{
     	
     	super.addPawn(x, pawn);
     	
-    	if(!isMyTurn()) {
-    		// start to listen
-    		startListen();
+    	if(!isMyTurn() || (!this.gameIsRunning && isMyTurn())) {
+    		// start to listen if the game is not finished yet
+    		if(this.gameIsRunning)
+    			startListen();
     		
     		// send the value played (because we have played so it's not our turn)
 			Output.write(this.currentPawnColPosition);
 	        Output.flush();
     	}
-    	else {
-    		// TODO: start a timer
-    	}
+
+   		startTimer();
+    	
+    	// the game is finished: we give the points
+    	if(!this.gameIsRunning) 
+			if(
+	    			(ss != null && this.playerOneTurn) ||	// we are the server and we have won
+	    			(ss == null && !this.playerOneTurn)		// we are the client and we have won
+	    		)
+				Connect4.Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
     }
     
     /**
@@ -229,13 +280,59 @@ public class GameEngineOnline extends GameEngine{
 	}
     
     /**
-	 * This function draw the pawn above the grid.
+	 * This function draws the pawn above the grid.
 	 * @param g: the graphics object
 	 */
     @Override
 	public void displayPawnAboveGrid(Graphics g) {
 		if(soc != null && isMyTurn())
 			super.displayPawnAboveGrid(g);
+	}
+    
+    /**
+	 * This function display the name of the player that must play.
+	 * @param g: graphics by swing
+	 */
+    @Override
+	protected void displayPlayerTurn(Graphics g) {
+    	// not out turn: display the login of the other player
+    	// for the client
+    	if(!isMyTurn() && ss == null) {
+			Font font = g.getFont();
+			Color color = g.getColor();
+			g.setFont(font.deriveFont((float) 30));
+			g.setColor(new Color(0, 255, 0));
+			g.drawString("Au tour de :", 525, 150);
+			g.drawString(this.player1.getName(), 525, 190);
+			g.setColor(new Color(0, 255, 0));
+			g.setFont(font);
+			g.setColor(color);
+    	}
+    	
+    	// for the server
+    	else if(!isMyTurn() && ss != null) { 
+			Font font = g.getFont();
+			Color color = g.getColor();
+			g.setFont(font.deriveFont((float) 30));
+			g.setColor(new Color(0, 255, 0));
+			g.drawString("Au tour de :", 525, 150);
+			g.drawString(this.player2.getName(), 525, 190);
+			g.setColor(new Color(0, 255, 0));
+			g.setFont(font);
+			g.setColor(color);
+    	}
+    	
+    	// our turn
+    	else {
+    		Font font = g.getFont();
+			Color color = g.getColor();
+			g.setFont(font.deriveFont((float) 30));
+			g.setColor(new Color(0, 255, 0));
+			g.drawString("À votre tour", 525, 150);
+			g.setColor(new Color(0, 255, 0));
+			g.setFont(font);
+			g.setColor(color);
+    	}
 	}
     
     /**
@@ -256,6 +353,15 @@ public class GameEngineOnline extends GameEngine{
     @Override
     public void endGame() {
     	super.endGame();
+
+    	Connect4.Connect4.menu.refreshNbPoints();
+    }
+    
+    /**
+     * See GameEngine.quitEngine().
+     */
+    public void quitEngine() {
+    	super.quitEngine();
     	
     	closeConnection();
     }
@@ -278,6 +384,14 @@ public class GameEngineOnline extends GameEngine{
 				e.printStackTrace();
 			}
     	}
+    }
+    
+    /**
+     * This function starts the timer.
+     */
+    private void startTimer() {
+    	this.startTimer = true;
+		this.timerValue = Config.maxWaitingTimeForTurn;
     }
 
 }

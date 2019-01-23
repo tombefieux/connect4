@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -372,7 +371,7 @@ public class Menu extends JPanel implements ActionListener {
 		
 		// play on an hosted game 
 		else if(button.getLabel().equals("Rejoindre la partie"))
-			Connect4.startToHostAGame(Connect4.accountManager.getPlayerWithTheCurrentAccount());
+			Connect4.goToAnHostedGame(Connect4.accountManager.getPlayerWithTheCurrentAccount(), this.tfHostName.getText());
 		
 		// delete current account
 		else if (button.getLabel().equals("Supprimer ce compte")) {

@@ -60,7 +60,7 @@ public class Account implements Serializable {
 	 * @param points: the number of points to add
 	 */
 	public void addPoints(int points) {
-		this.points = points;
+		this.points += points;
 	}
 	
 	/**

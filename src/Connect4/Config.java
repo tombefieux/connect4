@@ -27,6 +27,8 @@ public class Config {
 	
 	public final static String AccountsSerialFileName = "accounts.bin";
 	
+	public final static int pointsAddedWhenWin = 5;
+	
 	// the grid
 	public final static String gridImagePath = imagePath + "grid.png";
 	public final static int grigSize = 420;
