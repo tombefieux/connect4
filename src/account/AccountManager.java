@@ -48,7 +48,7 @@ public class AccountManager {
 			return true;
 		}
 		
-    	JOptionPane.showMessageDialog(new JFrame(), "Mot de passe incorrecte.", "Erreur", JOptionPane.ERROR_MESSAGE);
+    	JOptionPane.showMessageDialog(new JFrame(), "Mot de passe incorrect.", "Erreur", JOptionPane.ERROR_MESSAGE);
 		return false;	
 	}
 	

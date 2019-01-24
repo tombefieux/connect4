@@ -2,11 +2,12 @@ package graphics;
 
 import java.awt.Button;
 import java.awt.CardLayout;
-import java.awt.Label;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -25,11 +26,11 @@ public class Menu extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	
 	// panels
-	private JPanel firstPanel;						/** The first panel of the menu. */
-	private JPanel twoPlayersPanel; 				/** The panel when we choose 2 players. */
-	private JPanel connectionPanel;					/** The panel to select an online account. */
-	private JPanel createAccountPanel;				/** The panel to create an account. */
-	private JPanel selectOnlineModePanel;			/** The panel to select the online mode. */
+	private MenuPanel firstPanel;						/** The first panel of the menu. */
+	private MenuPanel twoPlayersPanel; 				/** The panel when we choose 2 players. */
+	private MenuPanel connectionPanel;					/** The panel to select an online account. */
+	private MenuPanel createAccountPanel;				/** The panel to create an account. */
+	private MenuPanel selectOnlineModePanel;			/** The panel to select the online mode. */
 	
 	// elements
 	private JTextField tfPlayer1Name;				/** The text field to give the name of the player 1. */
@@ -40,8 +41,7 @@ public class Menu extends JPanel implements ActionListener {
 	private JTextField tfLoginCA;					/** The login in the create account panel. */
 	private JPasswordField tfPasswordCA;			/** The password in the create account panel. */
 	private JPasswordField tfPasswordConfCA;		/** The confirmation of the password in the create account panel. */
-	private Label nbPoint;							/** The label of the number of points. */
-	
+	private JLabel nbPoint;							/** The JLabel of the number of points. */	
 
 	/**
 	 * Constructor.
@@ -83,7 +83,7 @@ public class Menu extends JPanel implements ActionListener {
 	 * This function builds the first panel.
 	 */
 	private void buildFirstPanel() {
-		this.firstPanel = new JPanel();
+		this.firstPanel = new MenuPanel();
 		this.firstPanel.setPreferredSize(this.getSize());
 		this.firstPanel.setLayout(null);
 
@@ -108,7 +108,7 @@ public class Menu extends JPanel implements ActionListener {
 	 * This function builds the two players panel.
 	 */
 	public void buildTwoPlayersPanel() {
-		this.twoPlayersPanel = new JPanel();
+		this.twoPlayersPanel = new MenuPanel();
 		this.twoPlayersPanel.setPreferredSize(this.getSize());
 		this.twoPlayersPanel.setLayout(null);
 		
@@ -117,15 +117,19 @@ public class Menu extends JPanel implements ActionListener {
 		btRetour.setBounds(20, 20, 150, 30);
 		btRetour.addActionListener(this);
 		
-		Label lbP1 = new Label("Nom du joueur 1 :");
+		JLabel lbP1 = new JLabel("Nom du joueur 1 :");
 		lbP1.setBounds(550, 100, 250, 25);
+		lbP1.setForeground(new Color(253, 238, 215));
+		lbP1.setOpaque(false);
 		
 		this.tfPlayer1Name = new JTextField();
 		this.tfPlayer1Name.setBounds(550, 130, 250, 25);
 		this.tfPlayer1Name.setText("Joueur1");
 		
-		Label lbP2 = new Label("Nom du joueur 2 :");
+		JLabel lbP2 = new JLabel("Nom du joueur 2 :");
 		lbP2.setBounds(550, 170, 250, 25);
+		lbP2.setForeground(new Color(253, 238, 215));
+		lbP2.setOpaque(false);
 		
 		this.tfPlayer2Name = new JTextField();
 		this.tfPlayer2Name.setBounds(550, 200, 250, 25);
@@ -148,7 +152,7 @@ public class Menu extends JPanel implements ActionListener {
 	 * This function builds the connection panel.
 	 */
 	private void buildConnectionPanel() {
-		this.connectionPanel = new JPanel();
+		this.connectionPanel = new MenuPanel();
 		this.connectionPanel.setPreferredSize(this.getSize());
 		this.connectionPanel.setLayout(null);
 		
@@ -157,14 +161,18 @@ public class Menu extends JPanel implements ActionListener {
 		btRetour.setBounds(20, 20, 150, 30);
 		btRetour.addActionListener(this);
 		
-		Label lbP1 = new Label("Choisissez un compte multijoueur :");
+		JLabel lbP1 = new JLabel("Choisissez un compte multijoueur :");
 		lbP1.setBounds(550, 100, 250, 25);
+		lbP1.setForeground(new Color(253, 238, 215));
+		lbP1.setOpaque(false);
 		
 		this.cbAccount = new JComboBox<Object>(Connect4.accountManager.getLogins().toArray());
 		this.cbAccount.setBounds(550, 130, 250, 25);
 		
-		Label lbMdp = new Label("Mot de passe du compte :");
+		JLabel lbMdp = new JLabel("Mot de passe du compte :");
 		lbMdp.setBounds(550, 160, 250, 25);
+		lbMdp.setForeground(new Color(253, 238, 215));
+		lbMdp.setOpaque(false);
 		
 		this.tfPassword = new JPasswordField();
 		this.tfPassword.setBounds(550, 190, 250, 25);
@@ -190,7 +198,7 @@ public class Menu extends JPanel implements ActionListener {
 	 * This function builds the panel to create an account.
 	 */
 	private void buildCreateAccountPanel() {
-		this.createAccountPanel = new JPanel();
+		this.createAccountPanel = new MenuPanel();
 		this.createAccountPanel.setPreferredSize(this.getSize());
 		this.createAccountPanel.setLayout(null);
 		
@@ -199,20 +207,26 @@ public class Menu extends JPanel implements ActionListener {
 		btRetour.setBounds(20, 20, 200, 30);
 		btRetour.addActionListener(this);
 		
-		Label lbP1 = new Label("Login :");
+		JLabel lbP1 = new JLabel("Login :");
 		lbP1.setBounds(550, 100, 250, 25);
+		lbP1.setForeground(new Color(253, 238, 215));
+		lbP1.setOpaque(false);
 		
 		this.tfLoginCA = new JTextField();
 		this.tfLoginCA.setBounds(550, 125, 250, 25);
 		
-		Label lbMdp = new Label("Mot de passe :");
+		JLabel lbMdp = new JLabel("Mot de passe :");
 		lbMdp.setBounds(550, 155, 250, 25);
+		lbMdp.setForeground(new Color(253, 238, 215));
+		lbMdp.setOpaque(false);
 		
 		this.tfPasswordCA = new JPasswordField();
 		this.tfPasswordCA.setBounds(550, 180, 250, 25);
 		
-		Label lbMdpConf = new Label("Confirmez le mot de passe :");
+		JLabel lbMdpConf = new JLabel("Confirmez le mot de passe :");
 		lbMdpConf.setBounds(550, 210, 250, 25);
+		lbMdpConf.setForeground(new Color(253, 238, 215));
+		lbMdpConf.setOpaque(false);
 		
 		this.tfPasswordConfCA = new JPasswordField();
 		this.tfPasswordConfCA.setBounds(550, 235, 250, 25);
@@ -236,7 +250,7 @@ public class Menu extends JPanel implements ActionListener {
 	 * This function builds the panel to select the online mode.
 	 */
 	private void buildSelectOnlineModePanel() {
-		this.selectOnlineModePanel = new JPanel();
+		this.selectOnlineModePanel = new MenuPanel();
 		this.selectOnlineModePanel.setPreferredSize(this.getSize());
 		this.selectOnlineModePanel.setLayout(null);
 		
@@ -245,15 +259,19 @@ public class Menu extends JPanel implements ActionListener {
 		btRetour.setBounds(20, 20, 200, 30);
 		btRetour.addActionListener(this);
 		
-		this.nbPoint = new Label();
-		this.nbPoint.setBounds(20, 60, 200, 25);
+		this.nbPoint = new JLabel();
+		this.nbPoint.setBounds(20, 60, 400, 25);
+		this.nbPoint.setFont(this.nbPoint.getFont().deriveFont(22.f));
+		this.nbPoint.setOpaque(false);
 		
 		Button btHost = new Button("Héberger une partie");
 		btHost.setBounds(550, 100, 250, 40);
 		btHost.addActionListener(this);
 		
-		Label lbP1 = new Label("Adresse IP de l'host :");
+		JLabel lbP1 = new JLabel("Adresse IP de l'host :");
 		lbP1.setBounds(550, 160, 250, 25);
+		lbP1.setForeground(new Color(253, 238, 215));
+		lbP1.setOpaque(false);
 		
 		this.tfHostName = new JTextField();
 		this.tfHostName.setBounds(550, 190, 250, 25);
@@ -267,7 +285,7 @@ public class Menu extends JPanel implements ActionListener {
 		btShop.addActionListener(this);
 		
 		Button btDel = new Button("Supprimer ce compte");
-		btDel.setBounds(550, 400, 250, 40);
+		btDel.setBounds(550, 380, 250, 40);
 		btDel.addActionListener(this);
 		
 		// add them
@@ -393,7 +411,7 @@ public class Menu extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * This function refresh the label of number of points with the current account. 
+	 * This function refresh the JLabel of number of points with the current account. 
 	 */
 	public void refreshNbPoints() {
 		this.nbPoint.setText("Nombre de points : " + Connect4.accountManager.getConnectedAccount().getPoints());

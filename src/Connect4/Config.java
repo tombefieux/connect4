@@ -25,6 +25,8 @@ public class Config {
 	public final static String imagePath = "images/";
 	public final static String savingPath = "save/";
 	
+	public final static String mainBackgroundImagePath = imagePath + "mainBackground.png";
+	
 	public final static String AccountsSerialFileName = "accounts.bin";
 	
 	public final static int pointsAddedWhenWin = 5;
