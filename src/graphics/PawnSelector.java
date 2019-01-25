@@ -94,7 +94,7 @@ public class PawnSelector extends JPanel implements MouseListener {
 		
 		// if not possible, draw chain 
 		if(this.notPossible.contains(name))
-			g.drawImage(chainImage, x, y + paddingYForChain, this);
+			g.drawImage(chainImage, x + 1, y + paddingYForChain, this);
 	}
 	
 	/**
