@@ -42,7 +42,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	protected boolean stopEngine = true;	/** If the engine must be stopped. */
         
 	// for graphics
-	protected Image gridImage;
+	protected Image backgroundImage;		/** The background image. */
 	
 	/**
 	 * Constructor of the engine.
@@ -103,8 +103,8 @@ public class GameEngine extends JPanel implements MouseListener {
 	 * This function load the images needed to render.
 	 */
 	private void loadImages() {
-        ImageIcon iid = new ImageIcon(Config.gridImagePath);
-        this.gridImage = iid.getImage();
+        ImageIcon iid = new ImageIcon(Config.gameBackgroundImagePath);
+        this.backgroundImage = iid.getImage();
     }
 	
 	/**
@@ -227,7 +227,10 @@ public class GameEngine extends JPanel implements MouseListener {
 	/**
 	 * Render function for the game engine.
 	 */
-	public void render(Graphics g) {		
+	public void render(Graphics g) {
+		// display the background
+		g.drawImage(this.backgroundImage, 0, -30, this);
+		
 		// display the pawn above the grid
 		displayPawnAboveGrid(g);
 			
@@ -241,9 +244,6 @@ public class GameEngine extends JPanel implements MouseListener {
 								Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35,
 								this
 							);
-		
-		// display the grid
-		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);
 		
 		// display the turn
 		displayTurn(g);
@@ -291,9 +291,8 @@ public class GameEngine extends JPanel implements MouseListener {
 			Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("Partie nulle !", 525, 150);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
 		}
@@ -301,10 +300,9 @@ public class GameEngine extends JPanel implements MouseListener {
 			Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("Partie gagnée par :", 525, 150);
 			g.drawString(getCurrentPlayer().getName(), 525, 190);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
 		}
@@ -318,10 +316,9 @@ public class GameEngine extends JPanel implements MouseListener {
 		Font font = g.getFont();
 		Color color = g.getColor();
 		g.setFont(font.deriveFont((float) 30));
-		g.setColor(new Color(0, 255, 0));
+		g.setColor(new Color(0, 0, 0));
 		g.drawString("Au tour de :", 525, 150);
 		g.drawString(getCurrentPlayer().getName(), 525, 190);
-		g.setColor(new Color(0, 255, 0));
 		g.setFont(font);
 		g.setColor(color);
 	}

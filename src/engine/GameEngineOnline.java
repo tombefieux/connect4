@@ -175,9 +175,8 @@ public class GameEngineOnline extends GameEngine{
 				Font font = g.getFont();
 				Color color = g.getColor();
 				g.setFont(font.deriveFont((float) 30));
-				g.setColor(new Color(0, 255, 0));
+				g.setColor(new Color(255, 0, 0));
 				g.drawString("En attente du joueur...", 115, 325);
-				g.setColor(new Color(0, 255, 0));
 				g.setFont(font);
 				g.setColor(color);
 			}
@@ -186,9 +185,8 @@ public class GameEngineOnline extends GameEngine{
 				Font font = g.getFont();
 				Color color = g.getColor();
 				g.setFont(font.deriveFont((float) 30));
-				g.setColor(new Color(0, 255, 0));
+				g.setColor(new Color(0, 0, 0));
 				g.drawString("Connexion...", 115, 325);
-				g.setColor(new Color(0, 255, 0));
 				g.setFont(font);
 				g.setColor(color);
 			}
@@ -207,9 +205,8 @@ public class GameEngineOnline extends GameEngine{
 				Font font = g.getFont();
 				Color color = g.getColor();
 				g.setFont(font.deriveFont((float) 20));
-				g.setColor(new Color(0, 255, 0));
+				g.setColor(new Color(0, 0, 0));
 				g.drawString("Plus que " + (((int) (this.timerValue / 1000)) + 1) + "s", 525, 250);
-				g.setColor(new Color(0, 255, 0));
 				g.setFont(font);
 				g.setColor(color);
 			}
@@ -333,10 +330,9 @@ public class GameEngineOnline extends GameEngine{
 			Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("Au tour de :", 525, 150);
 			g.drawString(this.player1.getName(), 525, 190);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
     	}
@@ -346,10 +342,9 @@ public class GameEngineOnline extends GameEngine{
 			Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("Au tour de :", 525, 150);
 			g.drawString(this.player2.getName(), 525, 190);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
     	}
@@ -359,9 +354,8 @@ public class GameEngineOnline extends GameEngine{
     		Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("À votre tour", 525, 150);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
     	}

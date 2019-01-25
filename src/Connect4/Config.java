@@ -28,6 +28,7 @@ public class Config {
 	
 	public final static String mainBackgroundImagePath = imagePath + "mainBackground.png";
 	public final static String shopBackgroundImagePath = imagePath + "shopBackgound.png";
+	public final static String gameBackgroundImagePath = imagePath + "game.png";
 	public final static String chainImagePath = imagePath + "chain.png";
 	
 	public final static String AccountsSerialFileName = "accounts.bin";
@@ -35,7 +36,6 @@ public class Config {
 	public final static int pointsAddedWhenWin = 5;
 	
 	// the grid
-	public final static String gridImagePath = imagePath + "grid.png";
 	public final static int grigSize = 420;
 	public final static int gridMarginLeft = 50;
 

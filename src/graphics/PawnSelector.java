@@ -22,7 +22,7 @@ public class PawnSelector extends JPanel implements MouseListener {
 	private static final long serialVersionUID = 1L;
 	
 	private static final int pawnXStart = 97;
-	private static final int pawnYStart = 199;
+	private static final int pawnYStart = 201;
 	private static final int widthSpace = 101;
 	private static final int heightSpace = 85;
 	private static final int nbOfCol = 5;
