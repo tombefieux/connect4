@@ -512,7 +512,7 @@ public class GameEngine extends JPanel implements MouseListener {
 			// check on the top right of the pawn
 			if(x + i < Config.GRID_WIDTH && y - i >= 0 && !stopTopRight) {
 				if(this.grid[x + i][y - i] != null && this.grid[x + i][y - i].getOwner().equals(owner)) {
-					if(startingY > y - 1)
+					if(startingY > y - i)
 						startingY = y- i;
 					cpt++;
 				}
