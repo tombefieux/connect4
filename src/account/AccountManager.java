@@ -156,4 +156,13 @@ public class AccountManager {
 	public Account getConnectedAccount() {
 		return this.connectedAccount;
 	}
+	
+	/**
+	 * Setter for the pawn of the currently connected account.
+	 * @param pawn: the new pawn.
+	 */
+	public void setPawnForCurrentAccount(PawnName pawn) {
+		if(this.connectedAccount != null)
+			this.connectedAccount.setPawnName(pawn);
+	}
 }

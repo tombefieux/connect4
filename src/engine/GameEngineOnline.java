@@ -386,7 +386,7 @@ public class GameEngineOnline extends GameEngine{
     public void endGame() {
     	super.endGame();
 
-    	Connect4.Connect4.menu.refreshNbPoints();
+    	Connect4.Connect4.menu.refreshOnlineSelectionPanel();
     }
     
     /**

@@ -5,7 +5,10 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,21 +30,28 @@ public class Menu extends JPanel implements ActionListener {
 	
 	// panels
 	private MenuPanel firstPanel;						/** The first panel of the menu. */
-	private MenuPanel twoPlayersPanel; 				/** The panel when we choose 2 players. */
+	private MenuPanel twoPlayersPanel; 					/** The panel when we choose 2 players. */
 	private MenuPanel connectionPanel;					/** The panel to select an online account. */
 	private MenuPanel createAccountPanel;				/** The panel to create an account. */
 	private MenuPanel selectOnlineModePanel;			/** The panel to select the online mode. */
 	
 	// elements
-	private JTextField tfPlayer1Name;				/** The text field to give the name of the player 1. */
-	private JTextField tfPlayer2Name;				/** The text field to give the name of the player 2. */
-	private JComboBox<Object> cbAccount;			/** The combo box to select an online account. */
-	private JPasswordField tfPassword;				/** The text field for the password of the account. */
-	private JTextField tfHostName;					/** The text field to give the name of the host. */
-	private JTextField tfLoginCA;					/** The login in the create account panel. */
-	private JPasswordField tfPasswordCA;			/** The password in the create account panel. */
-	private JPasswordField tfPasswordConfCA;		/** The confirmation of the password in the create account panel. */
-	private JLabel nbPoint;							/** The JLabel of the number of points. */	
+	private JTextField tfPlayer1Name;					/** The text field to give the name of the player 1. */
+	private JTextField tfPlayer2Name;					/** The text field to give the name of the player 2. */
+	private JComboBox<Object> cbAccount;				/** The combo box to select an online account. */
+	private JPasswordField tfPassword;					/** The text field for the password of the account. */
+	private JTextField tfHostName;						/** The text field to give the name of the host. */
+	private JTextField tfLoginCA;						/** The login in the create account panel. */
+	private JPasswordField tfPasswordCA;				/** The password in the create account panel. */
+	private JPasswordField tfPasswordConfCA;			/** The confirmation of the password in the create account panel. */
+	private JLabel nbPoint;								/** The JLabel of the number of points. */
+	private JLabel pawnImage;							/** The selected pawn image of the online player. */
+	
+	private PawnName player1Pawn = PawnName.BasicPawn1;			/** The pawn for the player 1. */
+	private PawnName player2Pawn = PawnName.BasicPawn2;			/** The pawn for the player 2. */
+	private boolean pawnSelectionForPlayer1 = true;				/** If we want to select the pawn of the player 1 or not. */
+	private boolean pawnSelectionForOnline = false;				/** If we choose the pawn for the online mode. */
+	
 
 	/**
 	 * Constructor.
@@ -74,6 +84,7 @@ public class Menu extends JPanel implements ActionListener {
 		this.add("connectionPanel", this.connectionPanel);
 		this.add("createAccountPanel", this.createAccountPanel);
 		this.add("selectOnlineModePanel", this.selectOnlineModePanel);
+		this.add("selectPawnPanel", Connect4.selector);
 		
 		// set the first panel by default
 		((CardLayout)this.getLayout()).show(this, "firstPanel");
@@ -260,9 +271,14 @@ public class Menu extends JPanel implements ActionListener {
 		btRetour.addActionListener(this);
 		
 		this.nbPoint = new JLabel();
-		this.nbPoint.setBounds(20, 60, 400, 25);
+		this.nbPoint.setBounds(20, 80, 400, 25);
 		this.nbPoint.setFont(this.nbPoint.getFont().deriveFont(22.f));
 		this.nbPoint.setOpaque(false);
+		
+		JLabel lbPawn = new JLabel("Pion sélectionné :");
+		lbPawn.setBounds(20, 130, 250, 25);
+		lbPawn.setFont(this.nbPoint.getFont().deriveFont(22.f));
+		lbPawn.setOpaque(false);
 		
 		Button btHost = new Button("Héberger une partie");
 		btHost.setBounds(550, 100, 250, 40);
@@ -297,6 +313,7 @@ public class Menu extends JPanel implements ActionListener {
 		this.selectOnlineModePanel.add(btShop);
 		this.selectOnlineModePanel.add(btDel);
 		this.selectOnlineModePanel.add(this.nbPoint);
+		this.selectOnlineModePanel.add(lbPawn);
 	}
 
 	/**
@@ -335,7 +352,7 @@ public class Menu extends JPanel implements ActionListener {
 			if(player2Name.equals(player1Name))
 				player2Name += "(2)";
 			
-			Connect4.startAGameWithTwoPlayers(new Player(player1Name, PawnName.BasicPawn1), new Player(player2Name, PawnName.BasicPawn2));
+			Connect4.startAGameWithTwoPlayers(new Player(player1Name, player1Pawn), new Player(player2Name, player2Pawn));
 		}
 		
 		// go to online
@@ -353,7 +370,7 @@ public class Menu extends JPanel implements ActionListener {
 			else if(Connect4.accountManager.connectToAccount(this.cbAccount.getSelectedItem().toString(), this.tfPassword.getPassword())) {
 				this.tfPassword.setText("");
 				((CardLayout)this.getLayout()).show(this, "selectOnlineModePanel");
-				refreshNbPoints();
+				refreshOnlineSelectionPanel();
 			}
 		}
 		
@@ -373,7 +390,7 @@ public class Menu extends JPanel implements ActionListener {
 						this.tfPasswordCA.setText("");
 						this.tfPasswordConfCA.setText("");
 						((CardLayout)this.getLayout()).show(this, "selectOnlineModePanel");
-						refreshNbPoints();
+						refreshOnlineSelectionPanel();
 					}
 				}
 			}
@@ -390,6 +407,34 @@ public class Menu extends JPanel implements ActionListener {
 		// play on an hosted game 
 		else if(button.getLabel().equals("Rejoindre la partie"))
 			Connect4.goToAnHostedGame(Connect4.accountManager.getPlayerWithTheCurrentAccount(), this.tfHostName.getText());
+		
+		// change pawn
+		else if(button.getLabel().equals("Changer de pion")) {
+			
+			// add the return button
+			Button btRetour = new Button("Retour");
+			btRetour.setBounds(20, 20, 100, 30);
+			btRetour.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					((CardLayout)getLayout()).show(Connect4.menu, "selectOnlineModePanel");
+				}
+			});
+			Connect4.selector.removeAll();
+			Connect4.selector.add(btRetour);
+			
+			// get the blocked pawns
+			int nbOfPanwsDeblocked = Connect4.accountManager.getConnectedAccount().getPoints() / (Config.nbOfGameToDeblockANewPawn * Config.pointsAddedWhenWin) + Config.nbOfBasicPawns;
+			
+			List<PawnName> pawns = new ArrayList<PawnName>();
+			for (int i = PawnName.values().length - 1; i >= nbOfPanwsDeblocked; i--)
+				pawns.add(PawnName.values()[i]);
+			
+			// go select the pawn 
+			this.pawnSelectionForOnline = true;
+			Connect4.selector.update(pawns);
+			((CardLayout)this.getLayout()).show(this, "selectPawnPanel");
+		}
 		
 		// delete current account
 		else if (button.getLabel().equals("Supprimer ce compte")) {
@@ -413,7 +458,34 @@ public class Menu extends JPanel implements ActionListener {
 	/**
 	 * This function refresh the JLabel of number of points with the current account. 
 	 */
-	public void refreshNbPoints() {
+	public void refreshOnlineSelectionPanel() {
 		this.nbPoint.setText("Nombre de points : " + Connect4.accountManager.getConnectedAccount().getPoints());
+		
+		// the pawn image
+		if(this.pawnImage != null)
+			this.selectOnlineModePanel.remove(this.pawnImage);
+		
+		this.pawnImage = new JLabel(new ImageIcon(Config.getFullPathOfPawn(Connect4.accountManager.getConnectedAccount().getPawnName(), false)));
+		this.pawnImage.setBounds(175, 70, 150, 150);
+		this.selectOnlineModePanel.add(this.pawnImage);
+	}
+	
+	/**
+	 * This function can handle the return of the selection of a pawn by the pawn selector.
+	 * @param pawn
+	 */
+	public void handlePawnSelection(PawnName pawn) {
+		if(this.pawnSelectionForOnline)
+			Connect4.accountManager.setPawnForCurrentAccount(pawn);
+		
+		else {
+			if(this.pawnSelectionForPlayer1)
+				this.player1Pawn = pawn;
+			else
+				this.player2Pawn = pawn;
+		}
+		
+		refreshOnlineSelectionPanel();
+		((CardLayout)this.getLayout()).show(this, "selectOnlineModePanel");
 	}
 }

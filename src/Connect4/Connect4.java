@@ -12,6 +12,7 @@ import engine.GameEngineOnline;
 import entity.Player;
 import graphics.MainWindow;
 import graphics.Menu;
+import graphics.PawnSelector;
 
 public class Connect4 {
 	
@@ -19,6 +20,7 @@ public class Connect4 {
 	public static Menu menu;
 	public static AccountManager accountManager;
 	public static MainWindow window;
+	public static PawnSelector selector;
 	
 	public static boolean anEngineIsRunning = false;
 	
@@ -114,11 +116,14 @@ public class Connect4 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// we set the menu as panel to draw
+
+		// init
 		accountManager = new AccountManager();
+		selector = new PawnSelector();
 		menu = new Menu();
 		window = new MainWindow();
 		
+		// we set the menu as panel to draw
 		window.switchToPanel(menu);
 		window.setVisible(true);
 	}
