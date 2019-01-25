@@ -131,6 +131,34 @@ public class Config {
 				result = pawnsImagePath + "pawn11.png";
 			break;
 			
+		case BasicPawn3:
+			if(highlighted)
+				result = pawnsImagePath + "highlightedPawn14.png";
+			else
+				result = pawnsImagePath + "pawn14.png";
+			break;
+			
+		case BasicPawn4:
+			if(highlighted)
+				result = pawnsImagePath + "highlightedPawn15.png";
+			else
+				result = pawnsImagePath + "pawn15.png";
+			break;
+			
+		case Tennis:
+			if(highlighted)
+				result = pawnsImagePath + "highlightedPawn12.png";
+			else
+				result = pawnsImagePath + "pawn12.png";
+			break;
+			
+		case YingYang:
+			if(highlighted)
+				result = pawnsImagePath + "highlightedPawn13.png";
+			else
+				result = pawnsImagePath + "pawn13.png";
+			break;
+			
 		default:
 			break;
 		}

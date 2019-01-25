@@ -8,13 +8,17 @@ import java.io.Serializable;
 public enum PawnName implements Serializable {
 	BasicPawn1,
 	BasicPawn2,
-	Pizza,
-	Melon,
+	BasicPawn3,
+	BasicPawn4,
+	Apple,
 	Kiwi,
 	Orange,
-	Oreo,
-	Ball,
+	Melon,
 	Smiley,
-	Captain,
-	Apple
+	Ball,
+	Tennis,
+	YingYang,
+	Oreo,
+	Pizza,
+	Captain
 }
