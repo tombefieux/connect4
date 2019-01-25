@@ -46,6 +46,8 @@ public class Menu extends JPanel implements ActionListener {
 	private JPasswordField tfPasswordConfCA;			/** The confirmation of the password in the create account panel. */
 	private JLabel nbPoint;								/** The JLabel of the number of points. */
 	private JLabel pawnImage;							/** The selected pawn image of the online player. */
+	private JLabel p1PawnImage;							/** The selected pawn image of the player 1. */
+	private JLabel p2PawnImage;							/** The selected pawn image of the player 2. */
 	
 	private PawnName player1Pawn = PawnName.BasicPawn1;			/** The pawn for the player 1. */
 	private PawnName player2Pawn = PawnName.BasicPawn2;			/** The pawn for the player 2. */
@@ -128,23 +130,41 @@ public class Menu extends JPanel implements ActionListener {
 		btRetour.setBounds(20, 20, 150, 30);
 		btRetour.addActionListener(this);
 		
+		JLabel lbPawn1 = new JLabel("Pion sélectionné pour J1 :");
+		lbPawn1.setBounds(20, 65, 400, 25);
+		lbPawn1.setFont(lbPawn1.getFont().deriveFont(22.f));
+		lbPawn1.setOpaque(false);
+		
+		JLabel lbPawn2 = new JLabel("Pion sélectionné pour J2 :");
+		lbPawn2.setBounds(20, 135, 400, 25);
+		lbPawn2.setFont(lbPawn1.getFont());
+		lbPawn2.setOpaque(false);
+		
 		JLabel lbP1 = new JLabel("Nom du joueur 1 :");
-		lbP1.setBounds(550, 100, 250, 25);
+		lbP1.setBounds(550, 110, 250, 25);
 		lbP1.setForeground(new Color(253, 238, 215));
 		lbP1.setOpaque(false);
 		
 		this.tfPlayer1Name = new JTextField();
-		this.tfPlayer1Name.setBounds(550, 130, 250, 25);
+		this.tfPlayer1Name.setBounds(550, 135, 250, 25);
 		this.tfPlayer1Name.setText("Joueur1");
 		
+		Button btSelecPawn1 = new Button("Changer le pion de J1");
+		btSelecPawn1.setBounds(550, 165, 250, 30);
+		btSelecPawn1.addActionListener(this);
+		
 		JLabel lbP2 = new JLabel("Nom du joueur 2 :");
-		lbP2.setBounds(550, 170, 250, 25);
+		lbP2.setBounds(550, 205, 250, 25);
 		lbP2.setForeground(new Color(253, 238, 215));
 		lbP2.setOpaque(false);
 		
 		this.tfPlayer2Name = new JTextField();
-		this.tfPlayer2Name.setBounds(550, 200, 250, 25);
+		this.tfPlayer2Name.setBounds(550, 230, 250, 25);
 		this.tfPlayer2Name.setText("Joueur2");
+		
+		Button btSelecPawn2 = new Button("Changer le pion de J2");
+		btSelecPawn2.setBounds(550, 260, 250, 30);
+		btSelecPawn2.addActionListener(this);
 		
 		Button btPlay = new Button("Jouer !");
 		btPlay.setBounds(550, 350, 250, 40);
@@ -157,6 +177,10 @@ public class Menu extends JPanel implements ActionListener {
 		this.twoPlayersPanel.add(lbP2);
 		this.twoPlayersPanel.add(this.tfPlayer2Name);
 		this.twoPlayersPanel.add(btPlay);
+		this.twoPlayersPanel.add(lbPawn1);
+		this.twoPlayersPanel.add(lbPawn2);
+		this.twoPlayersPanel.add(btSelecPawn1);
+		this.twoPlayersPanel.add(btSelecPawn2);
 	}
 	
 	/**
@@ -325,12 +349,62 @@ public class Menu extends JPanel implements ActionListener {
 		
 		// -- in the first panel
 		// two players
-		if(button.getLabel().equals("Deux joueurs"))
+		if(button.getLabel().equals("Deux joueurs")) {
+			refreshPlayersPanel();
 			((CardLayout)this.getLayout()).show(this, "twoPlayersPanel");
+		}
 		
 		// menu
 		else if (button.getLabel().equals("Retour au menu"))
 			((CardLayout)this.getLayout()).show(this, "firstPanel");
+		
+		// change player 1 pawn
+		else if (button.getLabel().equals("Changer le pion de J1")) {
+			// add the return button
+			Button btRetour = new Button("Retour");
+			btRetour.setBounds(20, 20, 100, 30);
+			btRetour.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					((CardLayout)getLayout()).show(Connect4.menu, "twoPlayersPanel");
+				}
+			});
+			Connect4.selector.removeAll();
+			Connect4.selector.add(btRetour);
+
+			// impossible pawns
+			List<PawnName> pawns = new ArrayList<PawnName>();
+			pawns.add(this.player2Pawn);
+			
+			// go select the pawn 
+			this.pawnSelectionForPlayer1 = true;
+			Connect4.selector.update(pawns);
+			((CardLayout)this.getLayout()).show(this, "selectPawnPanel");
+		}
+		
+		// change player 2 pawn
+		else if (button.getLabel().equals("Changer le pion de J2")) {
+			// add the return button
+			Button btRetour = new Button("Retour");
+			btRetour.setBounds(20, 20, 100, 30);
+			btRetour.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					((CardLayout)getLayout()).show(Connect4.menu, "twoPlayersPanel");
+				}
+			});
+			Connect4.selector.removeAll();
+			Connect4.selector.add(btRetour);
+
+			// impossible pawns
+			List<PawnName> pawns = new ArrayList<PawnName>();
+			pawns.add(this.player1Pawn);
+			
+			// go select the pawn 
+			this.pawnSelectionForPlayer1 = false;
+			Connect4.selector.update(pawns);
+			((CardLayout)this.getLayout()).show(this, "selectPawnPanel");
+		}
 		
 		// play with two players
 		else if (button.getLabel().equals("Jouer !")) {
@@ -471,21 +545,46 @@ public class Menu extends JPanel implements ActionListener {
 	}
 	
 	/**
+	 * This function refresh the panel of selection of the two players.
+	 */
+	public void refreshPlayersPanel() {
+		// pawn player 1
+		if(this.p1PawnImage != null)
+			this.twoPlayersPanel.remove(this.p1PawnImage);
+		
+		this.p1PawnImage = new JLabel(new ImageIcon(Config.getFullPathOfPawn(this.player1Pawn, false)));
+		this.p1PawnImage.setBounds(260, 5, 150, 150);
+		this.twoPlayersPanel.add(this.p1PawnImage);
+		
+		// pawn player 2
+		if(this.p2PawnImage != null)
+			this.twoPlayersPanel.remove(this.p2PawnImage);
+		
+		this.p2PawnImage = new JLabel(new ImageIcon(Config.getFullPathOfPawn(this.player2Pawn, false)));
+		this.p2PawnImage.setBounds(260, 75, 150, 150);
+		this.twoPlayersPanel.add(this.p2PawnImage);
+	}
+	
+	/**
 	 * This function can handle the return of the selection of a pawn by the pawn selector.
 	 * @param pawn
 	 */
 	public void handlePawnSelection(PawnName pawn) {
-		if(this.pawnSelectionForOnline)
+		if(this.pawnSelectionForOnline) {
 			Connect4.accountManager.setPawnForCurrentAccount(pawn);
+			refreshOnlineSelectionPanel();
+			this.pawnSelectionForOnline = false;
+			((CardLayout)this.getLayout()).show(this, "selectOnlineModePanel");
+		}
 		
 		else {
 			if(this.pawnSelectionForPlayer1)
 				this.player1Pawn = pawn;
 			else
 				this.player2Pawn = pawn;
+			
+			refreshPlayersPanel();
+			((CardLayout)getLayout()).show(Connect4.menu, "twoPlayersPanel");
 		}
-		
-		refreshOnlineSelectionPanel();
-		((CardLayout)this.getLayout()).show(this, "selectOnlineModePanel");
 	}
 }
