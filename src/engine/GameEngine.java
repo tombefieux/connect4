@@ -203,12 +203,13 @@ public class GameEngine extends JPanel implements MouseListener {
 			return;
 		
 		// add it
-		this.grid[x][getYWithX(x)] = pawn;
+		int y = getYWithX(x);
+		this.grid[x][y] = pawn;
 		
 		boolean gameEnded = false;
 		
 		// see if won with this pawn
-		if(isWonWith(x, getYWithX(x) + 1)) // -1 because we've already add the pawn 
+		if(isWonWith(x, y))
 			gameEnded = true;	
 
 		
