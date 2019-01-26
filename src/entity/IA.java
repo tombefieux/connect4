@@ -672,9 +672,9 @@ public class IA extends Player {
 		}
 	
 		// if win highlight
-		if(cpt >= 4)
-			for (int i = 0; i < cpt; i++)
-				this.grid[startingX + i][y].setHighlighted(true);
+		//if(cpt >= 4)
+			//for (int i = 0; i < cpt; i++)
+				//this.grid[startingX + i][y].setHighlighted(true);
 		
 		return (cpt >= 4);
 	}
@@ -715,9 +715,9 @@ public class IA extends Player {
 		}
 		
 		// if win highlight
-		if(cpt >= 4)
-			for (int i = 0; i < cpt; i++)
-				this.grid[x][startingY + i].setHighlighted(true);
+		//if(cpt >= 4)
+		//	for (int i = 0; i < cpt; i++)
+		//		this.grid[x][startingY + i].setHighlighted(true);
 		
 		return (cpt >= 4);
 	}
@@ -758,9 +758,9 @@ public class IA extends Player {
 		}
 		
 		// if win highlight
-		if(cpt >= 4)
-			for (int i = 0; i < cpt; i++)
-				this.grid[startingX + i][y - (x - startingX) + i].setHighlighted(true);
+		//if(cpt >= 4)
+		//	for (int i = 0; i < cpt; i++)
+		//		this.grid[startingX + i][y - (x - startingX) + i].setHighlighted(true);
 		
 		return (cpt >= 4);
 	}
@@ -801,9 +801,9 @@ public class IA extends Player {
 		}
 		
 		// if win highlight
-		if(cpt >= 4)
-			for (int i = 0; i < cpt; i++)
-				this.grid[x + (y - startingY) - i][startingY + i].setHighlighted(true);
+		//if(cpt >= 4)
+		//	for (int i = 0; i < cpt; i++)
+		//		this.grid[x + (y - startingY) - i][startingY + i].setHighlighted(true);
 		
 		return (cpt >= 4);
 	}
