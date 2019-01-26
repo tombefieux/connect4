@@ -222,21 +222,18 @@ public class GameEngine extends JPanel implements MouseListener {
 		if(gameEnded) endGame();
 		
 		if(player2 instanceof IA)
-                {  
-                    if(!playerOneTurn)
-                    {
-                        for(int i=0;i<width;i++)
-                        {
-                            for(int j=0;j<height;j++)
-                            {
-                                ((IA)this.player2).setGrid(i, j, grid[i][j]);
-                            }
-                        }
-                        ((IA)this.player2).setNemesis(player1);
-                        int XX=((IA)this.player2).jouer(2);
-                        addPawn(XX,new Pawn(getCurrentPlayer()));
-                    }
-                }
+        {  
+            if(!playerOneTurn && this.gameIsRunning)
+            {
+                for(int i=0;i<width;i++)
+                    for(int j=0;j<height;j++)
+                        ((IA)this.player2).setGrid(i, j, grid[i][j]);
+
+                ((IA)this.player2).setNemesis(player1);
+                int XX=((IA)this.player2).jouer(2);
+                addPawn(XX,new Pawn(getCurrentPlayer()));
+            }
+        }
 	}
 	
 	/**
