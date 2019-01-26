@@ -24,6 +24,21 @@ public class Connect4 {
 	
 	public static boolean anEngineIsRunning = false;
 	
+        
+        /**
+	 * This function starts a game solo.
+	 * @param player1: the first player.
+	 */
+         public static void startAGameWithOnePlayer(Player player1)
+        {
+            GameEngine engine = new GameEngine(Config.GRID_WIDTH, Config.GRID_HEIGHT);
+            window.switchToPanel(engine);
+            engine.startSolo(player1);
+            
+            // start the game in a thread
+            runAnEngine(engine);
+        }
+        
 	/**
 	 * This function starts a game with two players.
 	 * @param player1: the first player.

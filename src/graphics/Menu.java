@@ -348,6 +348,13 @@ public class Menu extends JPanel implements ActionListener {
 		Button button = ((Button) e.getSource());
 		
 		// -- in the first panel
+                
+                //Solo player
+                 if(button.getLabel().equals("Un joueur"))
+                {
+                    Connect4.startAGameWithOnePlayer(new Player("Vous", PawnName.BasicPawn1));
+                }
+                
 		// two players
 		if(button.getLabel().equals("Deux joueurs")) {
 			refreshPlayersPanel();

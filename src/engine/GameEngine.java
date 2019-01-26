@@ -22,6 +22,8 @@ import javax.swing.SwingUtilities;
 import Connect4.Config;
 import entity.Pawn;
 import entity.Player;
+import entity.IA;
+import entity.PawnName;
 
 /**
  * This class represents the game engine of the connect 4.
@@ -122,6 +124,18 @@ public class GameEngine extends JPanel implements MouseListener {
 		this.gameIsRunning = !this.gameIsRunning;
 		this.stopEngine = false;
 	}
+        
+        public void startSolo(Player player1) {
+		resetEngine();
+		
+		this.player1 = player1;
+               
+		this.player2 = new IA("Azimov",PawnName.BasicPawn2,width,height);
+                
+		this.playerOneTurn = true;
+		this.gameIsRunning = !this.gameIsRunning;
+		this.stopEngine = false;
+	}
 	
 	/**
 	 * This function updates the game engine.
@@ -207,10 +221,22 @@ public class GameEngine extends JPanel implements MouseListener {
 		// if the game is finished
 		if(gameEnded) endGame();
 		
-		// TODO: FOR THE AI: check if the new current player is an instance of AI and then let it play.
-		/**
-		 * Create a function play which takes the grid and return the x to play. Then, use the add pawn function with the x returned. (not that difficult ;))
-		 */
+		if(player2 instanceof IA)
+                {  
+                    if(!playerOneTurn)
+                    {
+                        for(int i=0;i<width;i++)
+                        {
+                            for(int j=0;j<height;j++)
+                            {
+                                ((IA)this.player2).setGrid(i, j, grid[i][j]);
+                            }
+                        }
+                        ((IA)this.player2).setNemesis(player1);
+                        int XX=((IA)this.player2).jouer(2);
+                        addPawn(XX,new Pawn(getCurrentPlayer()));
+                    }
+                }
 	}
 	
 	/**
@@ -662,7 +688,12 @@ public class GameEngine extends JPanel implements MouseListener {
 		else
 			currentPlayer = this.player2;
 		return currentPlayer;
-	}        
+	}
+
+        public Pawn[][] getGrid()
+        {
+            return grid;
+        }
 
 	/*
 	 * (non-Javadoc)
@@ -691,4 +722,6 @@ public class GameEngine extends JPanel implements MouseListener {
 	 */
 	@Override
 	public void mouseReleased(MouseEvent arg0) {}
+        
+        
 }
