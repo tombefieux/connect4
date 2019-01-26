@@ -33,18 +33,19 @@ public class GameEngine extends JPanel implements MouseListener {
 
 	protected static final long serialVersionUID = 1L;
 	
-	protected Pawn[][] grid;				/** The grid of the connect 4 */
-	protected int width;					/** The width of the grid */
-	protected int height;					/** The height of the grid */
-	protected Player player1;				/** The first player */
-	protected Player player2;				/** The second player */
-	protected boolean playerOneTurn;		/** If it's to the player 1 to play. */
-	protected boolean gameIsRunning;		/** If a game is running in the engine. */
-	protected int currentPawnColPosition;	/** The current position of the pawn. */
-	protected boolean stopEngine = true;	/** If the engine must be stopped. */
+	protected Pawn[][] grid;						/** The grid of the connect 4 */
+	protected int width;							/** The width of the grid */
+	protected int height;							/** The height of the grid */
+	protected Player player1;						/** The first player */
+	protected Player player2;						/** The second player */
+	protected boolean playerOneTurn;				/** If it's to the player 1 to play. */
+	protected boolean gameIsRunning;				/** If a game is running in the engine. */
+	protected int currentPawnColPosition;			/** The current position of the pawn. */
+	protected boolean stopEngine = true;			/** If the engine must be stopped. */
+	private int colToDrawForAIAnimation = -1;		/** The column where we must draw a pawn to create an animation for the AI. */
         
 	// for graphics
-	protected Image backgroundImage;		/** The background image. */
+	protected Image backgroundImage;				/** The background image. */
 	
 	/**
 	 * Constructor of the engine.
@@ -169,20 +170,22 @@ public class GameEngine extends JPanel implements MouseListener {
 	 * @param p: the mouse click position
 	 */
 	protected void gridClicked(Point p) {
-		
-		// if we are not in a game
-		if(!isGameRunning())
-			return;
-
-		// get the column
-		currentPawnColPosition = (p.x - Config.gridMarginLeft) / 60;
-		
-		// if impossible on this column
-		if(!getPossiblesX().contains(currentPawnColPosition))
-			return;
-
-		// add the pawn
-		addPawn(currentPawnColPosition, new Pawn(getCurrentPlayer()));
+		// not an AI and it's its turn
+		if(!(player2 instanceof IA && !this.playerOneTurn)) {
+			// if we are not in a game
+			if(!isGameRunning())
+				return;
+	
+			// get the column
+			currentPawnColPosition = (p.x - Config.gridMarginLeft) / 60;
+			
+			// if impossible on this column
+			if(!getPossiblesX().contains(currentPawnColPosition))
+				return;
+	
+			// add the pawn
+			addPawn(currentPawnColPosition, new Pawn(getCurrentPlayer()));
+		}
 	}
 	
 	/**
@@ -224,16 +227,46 @@ public class GameEngine extends JPanel implements MouseListener {
 		if(player2 instanceof IA)
         {  
             if(!playerOneTurn && this.gameIsRunning)
-            {
-                for(int i=0;i<width;i++)
-                    for(int j=0;j<height;j++)
-                        ((IA)this.player2).setGrid(i, j, grid[i][j]);
-
-                ((IA)this.player2).setNemesis(player1);
-                int XX=((IA)this.player2).jouer(Config.selectedAIDif);
-                addPawn(XX,new Pawn(getCurrentPlayer()));
+            { 
+            	// run the AI in a thread
+            	Thread t = new Thread() {
+        			public void run() {
+        				// update the AI grid
+                        for(int i=0;i<width;i++)
+                            for(int j=0;j<height;j++)
+                                ((IA)player2).setGrid(i, j, grid[i][j]);
+                        
+                        // get the result
+                        ((IA)player2).setNemesis(player1);
+                        int XX=((IA)player2).jouer(Config.selectedAIDif);
+                        
+                        // run animation to "humanize" the AI
+                        playAnimation(XX);
+                        
+                        // play
+                        addPawn(XX, new Pawn(getCurrentPlayer()));
+        			}
+        		};
+        		t.start();
             }
         }
+	}
+	
+	/**
+	 * This function runs an animation for a turn.
+	 * @param col: the column where the pawn will be played
+	 */
+	private void playAnimation(int col) {
+		for (int i = 0; i <= col; i++) {
+			this.colToDrawForAIAnimation = i;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		this.colToDrawForAIAnimation = -1;
 	}
 	
 	/**
@@ -270,6 +303,16 @@ public class GameEngine extends JPanel implements MouseListener {
 		
 		// display the turn
 		displayTurn(g);
+		
+		// if we have an AI display the animation
+		if(this.colToDrawForAIAnimation != -1) {
+			g.drawImage(
+					Config.getImageOfPawn(getCurrentPlayer().getPawnName(), false),
+					Config.gridMarginLeft + this.colToDrawForAIAnimation * Config.pawnSize,
+					Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize - 40,
+					this
+				);
+		}
 	}
 	
 	/**
@@ -279,25 +322,28 @@ public class GameEngine extends JPanel implements MouseListener {
 	public void displayPawnAboveGrid(Graphics g) {
 		// if we're running a game
 		if(isGameRunning()) {
-			// if the mouse is at the good position
-			Point p = getMousePositionInWindow();
-			if(
-					p.x >= Config.gridMarginLeft && p.x <= Config.gridMarginLeft + Config.grigSize &&
-					p.y >= Config.windowHeight - Config.gridMarginLeft - Config.grigSize && p.y <= Config.windowHeight - Config.gridMarginLeft
-					) {
-				
-				// get the column
-				int pawnColPosition = (p.x - Config.gridMarginLeft) / 60;
-				
-				// if possible on this column
-				if(getPossiblesX().contains(pawnColPosition))
-					g.drawImage(
-								Config.getImageOfPawn(getCurrentPlayer().getPawnName(), false),
-								Config.gridMarginLeft + pawnColPosition * Config.pawnSize,
-								Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize - 40,
-								this
-							);
-				
+			// not an AI and it's its turn
+			if(!(player2 instanceof IA && !this.playerOneTurn)) {
+				// if the mouse is at the good position
+				Point p = getMousePositionInWindow();
+				if(
+						p.x >= Config.gridMarginLeft && p.x <= Config.gridMarginLeft + Config.grigSize &&
+						p.y >= Config.windowHeight - Config.gridMarginLeft - Config.grigSize && p.y <= Config.windowHeight - Config.gridMarginLeft
+						) {
+					
+					// get the column
+					int pawnColPosition = (p.x - Config.gridMarginLeft) / 60;
+					
+					// if possible on this column
+					if(getPossiblesX().contains(pawnColPosition))
+						g.drawImage(
+									Config.getImageOfPawn(getCurrentPlayer().getPawnName(), false),
+									Config.gridMarginLeft + pawnColPosition * Config.pawnSize,
+									Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize - 40,
+									this
+								);
+					
+				}
 			}
 		}
 	}
