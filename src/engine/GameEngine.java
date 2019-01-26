@@ -21,10 +21,7 @@ import javax.swing.SwingUtilities;
 
 import Connect4.Config;
 import entity.Pawn;
-import entity.PawnName;
 import entity.Player;
-import entity.IA;
-
 
 /**
  * This class represents the game engine of the connect 4.
@@ -45,7 +42,7 @@ public class GameEngine extends JPanel implements MouseListener {
 	protected boolean stopEngine = true;	/** If the engine must be stopped. */
         
 	// for graphics
-	protected Image gridImage;
+	protected Image backgroundImage;		/** The background image. */
 	
 	/**
 	 * Constructor of the engine.
@@ -106,8 +103,8 @@ public class GameEngine extends JPanel implements MouseListener {
 	 * This function load the images needed to render.
 	 */
 	private void loadImages() {
-        ImageIcon iid = new ImageIcon(Config.gridImagePath);
-        this.gridImage = iid.getImage();
+        ImageIcon iid = new ImageIcon(Config.gameBackgroundImagePath);
+        this.backgroundImage = iid.getImage();
     }
 	
 	/**
@@ -121,18 +118,6 @@ public class GameEngine extends JPanel implements MouseListener {
 		this.player1 = player1;
 		this.player2 = player2;
 		
-		this.playerOneTurn = true;
-		this.gameIsRunning = !this.gameIsRunning;
-		this.stopEngine = false;
-	}
-        
-        public void startSolo(Player player1) {
-		resetEngine();
-		
-		this.player1 = player1;
-               
-		this.player2 = new IA("Azimov",PawnName.BasicPawn2,width,height);
-                
 		this.playerOneTurn = true;
 		this.gameIsRunning = !this.gameIsRunning;
 		this.stopEngine = false;
@@ -218,28 +203,15 @@ public class GameEngine extends JPanel implements MouseListener {
 		// change the turn if we continue
 		if(!gameEnded)
 			this.playerOneTurn = !this.playerOneTurn;
-                
 		
 		// if the game is finished
 		if(gameEnded) endGame();
 		
-                
 		// TODO: FOR THE AI: check if the new current player is an instance of AI and then let it play.
 		/**
 		 * Create a function play which takes the grid and return the x to play. Then, use the add pawn function with the x returned. (not that difficult ;))
 		 */
-                
-                if(!playerOneTurn)
-                {
-                    if(player2 instanceof IA) 
-                    {
-                        
-                        ((IA)this.player2).setGrid(getGrid());
-                        int XX=((IA)this.player2).jouer(4);
-                        addPawn(XX,new Pawn(getCurrentPlayer()));
-                    }
-                }
-        }
+	}
 	
 	/**
 	 * This function is an override of the JPanel function to draw our game.
@@ -255,7 +227,10 @@ public class GameEngine extends JPanel implements MouseListener {
 	/**
 	 * Render function for the game engine.
 	 */
-	public void render(Graphics g) {		
+	public void render(Graphics g) {
+		// display the background
+		g.drawImage(this.backgroundImage, 0, -30, this);
+		
 		// display the pawn above the grid
 		displayPawnAboveGrid(g);
 			
@@ -269,9 +244,6 @@ public class GameEngine extends JPanel implements MouseListener {
 								Config.windowHeight - Config.gridMarginLeft - Config.grigSize - Config.pawnSize + j * Config.pawnSize + 35,
 								this
 							);
-		
-		// display the grid
-		g.drawImage(this.gridImage, Config.gridMarginLeft, Config.windowHeight - Config.gridMarginLeft - Config.grigSize - 25, this);
 		
 		// display the turn
 		displayTurn(g);
@@ -319,9 +291,8 @@ public class GameEngine extends JPanel implements MouseListener {
 			Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("Partie nulle !", 525, 150);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
 		}
@@ -329,10 +300,9 @@ public class GameEngine extends JPanel implements MouseListener {
 			Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("Partie gagnée par :", 525, 150);
 			g.drawString(getCurrentPlayer().getName(), 525, 190);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
 		}
@@ -346,10 +316,9 @@ public class GameEngine extends JPanel implements MouseListener {
 		Font font = g.getFont();
 		Color color = g.getColor();
 		g.setFont(font.deriveFont((float) 30));
-		g.setColor(new Color(0, 255, 0));
+		g.setColor(new Color(0, 0, 0));
 		g.drawString("Au tour de :", 525, 150);
 		g.drawString(getCurrentPlayer().getName(), 525, 190);
-		g.setColor(new Color(0, 255, 0));
 		g.setFont(font);
 		g.setColor(color);
 	}
@@ -543,7 +512,7 @@ public class GameEngine extends JPanel implements MouseListener {
 			// check on the top right of the pawn
 			if(x + i < Config.GRID_WIDTH && y - i >= 0 && !stopTopRight) {
 				if(this.grid[x + i][y - i] != null && this.grid[x + i][y - i].getOwner().equals(owner)) {
-					if(startingY > y - 1)
+					if(startingY > y - i)
 						startingY = y- i;
 					cpt++;
 				}
@@ -722,9 +691,4 @@ public class GameEngine extends JPanel implements MouseListener {
 	 */
 	@Override
 	public void mouseReleased(MouseEvent arg0) {}
-        
-        public Pawn[][] getGrid()
-        {
-            return grid;
-        }
 }

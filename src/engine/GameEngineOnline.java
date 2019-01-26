@@ -1,23 +1,27 @@
 
 package engine;
 
-import java.net.*;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import java.io.*;
-
-import Connect4.Config;
-import engine.GameEngine;
-import entity.Pawn;
-import entity.PawnName;
-import entity.Player;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import Connect4.Config;
+import Connect4.Connect4;
+import entity.Pawn;
+import entity.PawnName;
+import entity.Player;
 
 /**
  * This class is a game engine for the online mode.
@@ -175,9 +179,8 @@ public class GameEngineOnline extends GameEngine{
 				Font font = g.getFont();
 				Color color = g.getColor();
 				g.setFont(font.deriveFont((float) 30));
-				g.setColor(new Color(0, 255, 0));
+				g.setColor(new Color(255, 0, 0));
 				g.drawString("En attente du joueur...", 115, 325);
-				g.setColor(new Color(0, 255, 0));
 				g.setFont(font);
 				g.setColor(color);
 			}
@@ -186,9 +189,8 @@ public class GameEngineOnline extends GameEngine{
 				Font font = g.getFont();
 				Color color = g.getColor();
 				g.setFont(font.deriveFont((float) 30));
-				g.setColor(new Color(0, 255, 0));
+				g.setColor(new Color(0, 0, 0));
 				g.drawString("Connexion...", 115, 325);
-				g.setColor(new Color(0, 255, 0));
 				g.setFont(font);
 				g.setColor(color);
 			}
@@ -207,9 +209,8 @@ public class GameEngineOnline extends GameEngine{
 				Font font = g.getFont();
 				Color color = g.getColor();
 				g.setFont(font.deriveFont((float) 20));
-				g.setColor(new Color(0, 255, 0));
+				g.setColor(new Color(0, 0, 0));
 				g.drawString("Plus que " + (((int) (this.timerValue / 1000)) + 1) + "s", 525, 250);
-				g.setColor(new Color(0, 255, 0));
 				g.setFont(font);
 				g.setColor(color);
 			}
@@ -235,7 +236,7 @@ public class GameEngineOnline extends GameEngine{
         }
         catch(SocketTimeoutException e) {
 			JOptionPane.showMessageDialog(new JFrame(), "Le joueur adverse a mis trop de temps à jouer, vous avez donc gagné.", "Information", JOptionPane.INFORMATION_MESSAGE);
-			Connect4.Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
+			Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
         	quitEngine();
         }
         catch (IOException e) {
@@ -298,7 +299,7 @@ public class GameEngineOnline extends GameEngine{
 	    			(ss != null && this.playerOneTurn) ||	// we are the server and we have won
 	    			(ss == null && !this.playerOneTurn)		// we are the client and we have won
 	    		)
-				Connect4.Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
+				Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
     }
     
     /**
@@ -333,10 +334,9 @@ public class GameEngineOnline extends GameEngine{
 			Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("Au tour de :", 525, 150);
 			g.drawString(this.player1.getName(), 525, 190);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
     	}
@@ -346,10 +346,9 @@ public class GameEngineOnline extends GameEngine{
 			Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("Au tour de :", 525, 150);
 			g.drawString(this.player2.getName(), 525, 190);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
     	}
@@ -359,9 +358,8 @@ public class GameEngineOnline extends GameEngine{
     		Font font = g.getFont();
 			Color color = g.getColor();
 			g.setFont(font.deriveFont((float) 30));
-			g.setColor(new Color(0, 255, 0));
+			g.setColor(new Color(0, 0, 0));
 			g.drawString("À votre tour", 525, 150);
-			g.setColor(new Color(0, 255, 0));
 			g.setFont(font);
 			g.setColor(color);
     	}
@@ -386,7 +384,7 @@ public class GameEngineOnline extends GameEngine{
     public void endGame() {
     	super.endGame();
 
-    	Connect4.Connect4.menu.refreshNbPoints();
+    	Connect4.menu.refreshOnlineSelectionPanel();
     }
     
     /**

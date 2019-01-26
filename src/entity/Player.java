@@ -5,8 +5,8 @@ package entity;
  */
 public class Player {
 	
-	protected String name; 		/** The name of the player. */
-	protected PawnName pawnName;	/** The name of the pawn. */
+	private String name; 		/** The name of the player. */
+	private PawnName pawnName;	/** The name of the pawn. */
 	
 	/**
 	 * The constructor.
@@ -58,5 +58,4 @@ public class Player {
 	public void setPawnName(PawnName pawnName) {
 		this.pawnName = pawnName;
 	}
-        
 }
