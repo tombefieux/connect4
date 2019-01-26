@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package entity ;
 
 
@@ -10,15 +6,23 @@ import Connect4.Config;
 import entity.Player;
 import java.util.List;
 /**
- *
- * @author c
+ * Class that represents an AI for a solo game.
  */
 public class IA extends Player {
-    private Pawn[][] grid;
-    protected int width;					
-    protected int height;
-    protected Player Nemesis;
     
+    private Pawn[][] grid;      /** The "mental" grid were the AI is gonna simulate the game*/
+    protected int width;	/** Width of the grid */				
+    protected int height;       /** Height of the grid */
+    protected Player Nemesis;   /** The player against whom the AI is pitted */
+    
+    
+    /**
+	 * The constructor.
+	 * @param name: the Ai's name
+	 * @param pawnName: the name of its pawns
+         * @param width: width of the grid
+         * @param height; height of the grid
+	 */
     public IA(String name, PawnName pawnName, int width, int height)
     {
         super(name, pawnName);
@@ -30,18 +34,34 @@ public class IA extends Player {
 			this.grid[i] = new Pawn[height];
 	}
     }
-
+    
+    /**
+	 * Setter for a case of the grid.
+         * @param i: postion of the pawn on the y axis
+         * @param j: position of the pawn on the x axis
+	 * @param pawn: the pawn
+	 */
     public void setGrid(int i, int j, Pawn pawn)
     {
         grid[i][j]=pawn;
         
     }
     
+    /**
+	 * Setter for the nemesis.
+	 * @param Nemesis: the real player
+	 */
     public void setNemesis(Player Nemesis)
     {
         this.Nemesis=Nemesis;    
     }
     
+    /**
+	 * This function return the column where the AI wants to play
+         * by choosing it with the Min-Max algorithm.
+         * It uses the Min-Maw algorithm on his own grid which is a perfect replica of the actual grid.
+	 * @param profondeur: how many play shoud the AI simulate.
+	 */
     public int jouer(int profondeur)
     {
         
@@ -73,6 +93,14 @@ public class IA extends Player {
 
     }
 
+    /**
+	 * This function return the Min part of the Min-Maw algorithm.
+         * So it simulate what the real player would choose, since the real player wants to 
+         * minimize the AI advantages.
+	 * @param profondeur: How many play the AI shall still simulate.
+         * @param x: position of the last played pawn on the X axis
+         * @param y: position of the last player pawn on the Y axis
+	 */
     public int Min(int profondeur,int x, int y)
     {
         if(profondeur == 0 || TheEND(x,y))
@@ -105,7 +133,14 @@ public class IA extends Player {
      return min;
     }
     
-    
+    /**
+	 * This function return the Max of the Min-Max algorithm.
+         * So it simulate what the AI should choose, by searching the play which 
+         * maximize his advantages.
+	 * @param profondeur: How many play the AI shall still simulate.
+         * @param x: position of the last played pawn on the X axis
+         * @param y: position of the last player pawn on the Y axis
+	 */
     public int Max(int profondeur,int x, int y)
     {
         if(profondeur == 0 || TheEND(x,y))
@@ -142,6 +177,14 @@ public class IA extends Player {
     }
 
 
+    /**
+	 * This function return a score that represents the current state of his mental game
+         * a positive score means that the AI has the edge over the player 
+         * a negative score means that the player has the edge over the AI
+         * a score of 10000 represents the winning condition
+	 * @param x: position of the last played pawn on the X axis
+         * @param y: position of the last player pawn on the Y axis
+	 */
     public int eval(int x, int y)
     {
         int eval=0;
@@ -176,7 +219,14 @@ public class IA extends Player {
         
         return eval;
     }
-    
+   
+    /**
+	 * This function return a score that represents a part of the current state of his mental game.
+         * Called in eval(int x, int y)
+         * Check on the X axis if there are nearby pawns and if there are, how many of them are linked together and by whom.
+	 * @param x: position on the X axis from which he should analyze
+         * @param y: position on the Y axis from which he should analyze
+	 */
     public int evalLine(int i, int j)
     {
        
@@ -297,6 +347,14 @@ public class IA extends Player {
        return eval;
     }
     
+    
+    /**
+	 * This function return a score that represents a part of the current state of his mental game.
+         * Called in eval(int x, int y)
+         * Check on the Y axis if there are nearby pawns and if there are, how many of them are linked together and by whom.
+	 * @param x: position on the X axis from which he should analyze
+         * @param y: position on the Y axis from which he should analyze
+	 */
     public int evalRow(int i, int j)
     {
 
@@ -417,235 +475,264 @@ public class IA extends Player {
        return eval;
     }
     
-    public int evalDiagonal(int i, int j)
-    {
-
-       int x=i;
-       int y= j;
-       int eval=0;
-       int compt1=0;
-       int compt2=0;
-       
-       //boolean freeL=false;
-       //boolean freeR=false;
-       boolean FirstStep = true;
-       
-       String joueur=null;
-       String joueur2=null;
-       
-       for(int a=1;a<4;a++)
-       {
-           if(x+a>=width || y-a<0) break;
-           if(grid[x+a][y-a]==null)
-           {
-               //freeL=true;
-               break;
-           }
-           if(grid[x+a][y-a].getOwner()!=null && FirstStep)
-           {
-               joueur=grid[x+a][y-a].getOwner().getName();
-               FirstStep=false;
-           }
-          
-           if(grid[x+a][y-a].getOwner().getName().equals(joueur))
-           {
-               compt1++;
-           }
-           
-           if(!grid[x+a][y-a].getOwner().getName().equals(joueur))
-           {
-               break;
-           }
-           
-       }
-      ;
-       FirstStep=true;
-       for(int a=1;a<4;a++)
-       {
-           if(x-a<0 || y+a>=height) break;
-           if(grid[x-a][y+a]==null)
-           {
-               //freeR=true;
-               break;
-           }
-           if(!FirstStep && grid[x-a][y+a].getOwner().getName().equals(grid[x-a+1][y+a-1].getOwner().getName()))
-           {
-               compt2++;
-           }
-           if(grid[x-a][y+a].getOwner()!=null && FirstStep && !grid[x-a][y+a].getOwner().getName().equals(joueur))
-           {
-               joueur2=grid[x-a][y+a].getOwner().getName();
-               compt2++;
-               FirstStep=false;
-           }  
-           if(FirstStep && grid[x-a][y+a].getOwner().getName().equals(joueur))
-           {
-               compt2++;
-               FirstStep=false;
-           }
-           
-           
-       }
-       
-       if(joueur!=null)
-       {
-            int compt = compt1 + compt2;
-            if(compt>=4) eval = 10000; 
-            else{
-                
-                eval=(compt*compt)*1000;
-            }
-            if(joueur.equals(Nemesis.getName())) return (-1*eval);
-            else return eval;
-       }
-       if(joueur2!=null)
-       {
-            int compt = compt1 + compt2;
-            if(compt>=4) eval = 10000; 
-            else{
-                
-                eval=(compt*compt)*1000;
-            }
-            if(joueur2.equals(Nemesis.getName())) return (-1*eval);
-            else return eval;
-       }
-       if(joueur!=null && joueur2!=null)
-       {
-           
-           eval=(compt1*compt1)*1000-(compt2*compt2)*1000;
-           if(compt1 >= 4)
-           {
-               if(this.getName().equals(joueur)) return 10000;
-               else return -10000;
-           }
-           if(compt2 >= 4)
-           {
-               if(this.getName().equals(joueur2)) return 10000;
-               else return -10000;
-           }
-           
-       }
-       else eval=0;
-       return eval;
-    }
     
-    public int evalReverseDiagonal(int i, int j)
-    {
-
-       int x=i;
-       int y= j;
-       int eval=0;
-       int compt1=0;
-       int compt2=0;
-       
-       //boolean freeL=false;
-       //boolean freeR=false;
-       boolean FirstStep=true;
-       
-       String joueur=null;
-       String joueur2=null;
-       
-       for(int a=1;a<4;a++)
-       {
-           if(x+a>=width || y+a>=height) break;
-           if(grid[x+a][y+a]==null)
-           {
-               //freeL=true;
-               break;
-           }
-           if(grid[x+a][y+a].getOwner()!=null && FirstStep)
-           {
-               joueur=grid[x+a][y+a].getOwner().getName();
-               FirstStep=false;
-           }
-           
-           if(grid[x+a][y+a].getOwner().getName().equals(joueur))
-           {
-               compt1++;
-           }
-           
-           if(!grid[x+a][y+a].getOwner().getName().equals(joueur))
-           {
-               break;
-           }
-          
-       }
-
-       FirstStep=true;
-       for(int a=1;a<4;a++)
-       {
-           if(x-a<0 || y-a<0) break;
-           if(grid[x-a][y-a]==null)
-           {
-               //freeR=true;
-               break;
-           }
-           if(!FirstStep && grid[x-a][y-a].getOwner().getName().equals(grid[x-a][y-a+1].getOwner().getName()))
-           {
-               compt2++;
-           }
-           if(grid[x-a][y-a].getOwner()!=null && FirstStep && !grid[x-a][y-a].getOwner().getName().equals(joueur))
-           {
-               joueur2=grid[x-a][y-a].getOwner().getName();
-               compt2++;
-               FirstStep=false;
-           }  
-           if(FirstStep && grid[x-a][y-a].getOwner().getName().equals(joueur))
-           {
-               compt2++;
-               FirstStep=false;
-           }
-           
-       }
-       
-      if(joueur!=null)
-       {
-            int compt = compt1 + compt2;
-            if(compt>=4) eval = 10000; 
-            else{
-                
-                eval=(compt*compt)*1000;
-            }
-            if(joueur.equals(Nemesis.getName())) return (-1*eval);
-            else return eval;
-       }
-       if(joueur2!=null)
-       {
-            int compt = compt1 + compt2;
-            if(compt>=4) eval = 10000; 
-            else{
-                
-                eval=(compt*compt)*1000;
-            }
-            if(joueur2.equals(Nemesis.getName())) return (-1*eval);
-            else return eval;
-       }
-       if(joueur!=null && joueur2!=null)
-       {
-           
-           eval=(compt1*compt1)*1000-(compt2*compt2)*1000;
-           if(compt1 >= 4)
-           {
-               if(this.getName().equals(joueur)) return 10000;
-               else return -10000;
-           }
-           if(compt2 >= 4)
-           {
-               if(this.getName().equals(joueur2)) return 10000;
-               else return -10000;
-           }
-           
-       }
-       else eval=0;
-       return eval;
-    }
+    /**
+	 * This function return a score that represents a part of the current state of his mental game.
+         * Called in eval(int x, int y)
+         * Check on the Diagonal if there are nearby pawns and if there are, how many of them are linked together and by whom.
+	 * @param x: position on the X axis from which he should analyze
+         * @param y: position on the Y axis from which he should analyze
+	 */
+//    public int evalDiagonal(int i, int j)
+//    {
+//
+//       int x=i;
+//       int y= j;
+//       int eval=0;
+//       int compt1=0;
+//       int compt2=0;
+//       
+//       //boolean freeL=false;
+//       //boolean freeR=false;
+//       boolean FirstStep = true;
+//       
+//       String joueur=null;
+//       String joueur2=null;
+//       
+//       for(int a=1;a<4;a++)
+//       {
+//           if(x+a>=width || y-a<0) break;
+//           if(grid[x+a][y-a]==null)
+//           {
+//               //freeL=true;
+//               break;
+//           }
+//           if(grid[x+a][y-a].getOwner()!=null && FirstStep)
+//           {
+//               joueur=grid[x+a][y-a].getOwner().getName();
+//               FirstStep=false;
+//           }
+//          
+//           if(grid[x+a][y-a].getOwner().getName().equals(joueur))
+//           {
+//               compt1++;
+//           }
+//           
+//           if(!grid[x+a][y-a].getOwner().getName().equals(joueur))
+//           {
+//               break;
+//           }
+//           
+//       }
+//      ;
+//       FirstStep=true;
+//       for(int a=1;a<4;a++)
+//       {
+//           if(x-a<0 || y+a>=height) break;
+//           if(grid[x-a][y+a]==null)
+//           {
+//               //freeR=true;
+//               break;
+//           }
+//           if(!FirstStep && grid[x-a][y+a].getOwner().getName().equals(grid[x-a+1][y+a-1].getOwner().getName()))
+//           {
+//               compt2++;
+//           }
+//           if(grid[x-a][y+a].getOwner()!=null && FirstStep && !grid[x-a][y+a].getOwner().getName().equals(joueur))
+//           {
+//               joueur2=grid[x-a][y+a].getOwner().getName();
+//               compt2++;
+//               FirstStep=false;
+//           }  
+//           if(FirstStep && grid[x-a][y+a].getOwner().getName().equals(joueur))
+//           {
+//               compt2++;
+//               FirstStep=false;
+//           }
+//           
+//           
+//       }
+//       
+//       if(joueur!=null)
+//       {
+//            int compt = compt1 + compt2;
+//            if(compt>=4) eval = 10000; 
+//            else{
+//                
+//                eval=(compt*compt)*1000;
+//            }
+//            if(joueur.equals(Nemesis.getName())) return (-1*eval);
+//            else return eval;
+//       }
+//       if(joueur2!=null)
+//       {
+//            int compt = compt1 + compt2;
+//            if(compt>=4) eval = 10000; 
+//            else{
+//                
+//                eval=(compt*compt)*1000;
+//            }
+//            if(joueur2.equals(Nemesis.getName())) return (-1*eval);
+//            else return eval;
+//       }
+//       if(joueur!=null && joueur2!=null)
+//       {
+//           
+//           eval=(compt1*compt1)*1000-(compt2*compt2)*1000;
+//           if(compt1 >= 4)
+//           {
+//               if(this.getName().equals(joueur)) return 10000;
+//               else return -10000;
+//           }
+//           if(compt2 >= 4)
+//           {
+//               if(this.getName().equals(joueur2)) return 10000;
+//               else return -10000;
+//           }
+//           
+//       }
+//       else eval=0;
+//       return eval;
+//    }
+//    
     
     
+    /**
+	 * This function return a score that represents a part of the current state of his mental game.
+         * Called in eval(int x, int y)
+         * Check on the other diagonal if there are nearby pawns and if there are, how many of them are linked together and by whom.
+	 * @param x: position on the X axis from which he should analyze
+         * @param y: position on the Y axis from which he should analyze
+	 */
+//    public int evalReverseDiagonal(int i, int j)
+//    {
+//
+//       int x=i;
+//       int y= j;
+//       int eval=0;
+//       int compt1=0;
+//       int compt2=0;
+//       
+//       //boolean freeL=false;
+//       //boolean freeR=false;
+//       boolean FirstStep=true;
+//       
+//       String joueur=null;
+//       String joueur2=null;
+//       
+//       for(int a=1;a<4;a++)
+//       {
+//           if(x+a>=width || y+a>=height) break;
+//           if(grid[x+a][y+a]==null)
+//           {
+//               //freeL=true;
+//               break;
+//           }
+//           if(grid[x+a][y+a].getOwner()!=null && FirstStep)
+//           {
+//               joueur=grid[x+a][y+a].getOwner().getName();
+//               FirstStep=false;
+//           }
+//           
+//           if(grid[x+a][y+a].getOwner().getName().equals(joueur))
+//           {
+//               compt1++;
+//           }
+//           
+//           if(!grid[x+a][y+a].getOwner().getName().equals(joueur))
+//           {
+//               break;
+//           }
+//          
+//       }
+//
+//       FirstStep=true;
+//       for(int a=1;a<4;a++)
+//       {
+//           if(x-a<0 || y-a<0) break;
+//           if(grid[x-a][y-a]==null)
+//           {
+//               //freeR=true;
+//               break;
+//           }
+//           if(!FirstStep && grid[x-a][y-a].getOwner().getName().equals(grid[x-a][y-a+1].getOwner().getName()))
+//           {
+//               compt2++;
+//           }
+//           if(grid[x-a][y-a].getOwner()!=null && FirstStep && !grid[x-a][y-a].getOwner().getName().equals(joueur))
+//           {
+//               joueur2=grid[x-a][y-a].getOwner().getName();
+//               compt2++;
+//               FirstStep=false;
+//           }  
+//           if(FirstStep && grid[x-a][y-a].getOwner().getName().equals(joueur))
+//           {
+//               compt2++;
+//               FirstStep=false;
+//           }
+//           
+//       }
+//       
+//      if(joueur!=null)
+//       {
+//            int compt = compt1 + compt2;
+//            if(compt>=4) eval = 10000; 
+//            else{
+//                
+//                eval=(compt*compt)*1000;
+//            }
+//            if(joueur.equals(Nemesis.getName())) return (-1*eval);
+//            else return eval;
+//       }
+//       if(joueur2!=null)
+//       {
+//            int compt = compt1 + compt2;
+//            if(compt>=4) eval = 10000; 
+//            else{
+//                
+//                eval=(compt*compt)*1000;
+//            }
+//            if(joueur2.equals(Nemesis.getName())) return (-1*eval);
+//            else return eval;
+//       }
+//       if(joueur!=null && joueur2!=null)
+//       {
+//           
+//           eval=(compt1*compt1)*1000-(compt2*compt2)*1000;
+//           if(compt1 >= 4)
+//           {
+//               if(this.getName().equals(joueur)) return 10000;
+//               else return -10000;
+//           }
+//           if(compt2 >= 4)
+//           {
+//               if(this.getName().equals(joueur2)) return 10000;
+//               else return -10000;
+//           }
+//           
+//       }
+//       else eval=0;
+//       return eval;
+//    }
+    
+    /**
+	 * This function checks if there's a connect 4 with the pawn at (x, y).
+	 * @param x
+	 * @param y
+	 * @return if there's a connect 4
+	 */
     public boolean TheEND(int x, int y)
     {
         return (checkLine(x, y) || checkRow(x, y)  || checkDiagonal(x,y) || checkReversedDiagonal(x, y));
     }
     
+    /**
+	 * This function checks if there's a connect4 with the pawn at (x, y) in line.
+	 * This function also highlights the winning pawns.
+	 * @param x
+	 * @param y
+	 * @return if there's a connect 4
+	 */
     public boolean checkLine(int x, int y) {
 		int cpt = 1;
 		int startingX = x;
