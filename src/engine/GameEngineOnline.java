@@ -1,23 +1,27 @@
 
 package engine;
 
-import java.net.*;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import java.io.*;
-
-import Connect4.Config;
-import engine.GameEngine;
-import entity.Pawn;
-import entity.PawnName;
-import entity.Player;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import Connect4.Config;
+import Connect4.Connect4;
+import entity.Pawn;
+import entity.PawnName;
+import entity.Player;
 
 /**
  * This class is a game engine for the online mode.
@@ -232,7 +236,7 @@ public class GameEngineOnline extends GameEngine{
         }
         catch(SocketTimeoutException e) {
 			JOptionPane.showMessageDialog(new JFrame(), "Le joueur adverse a mis trop de temps à jouer, vous avez donc gagné.", "Information", JOptionPane.INFORMATION_MESSAGE);
-			Connect4.Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
+			Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
         	quitEngine();
         }
         catch (IOException e) {
@@ -295,7 +299,7 @@ public class GameEngineOnline extends GameEngine{
 	    			(ss != null && this.playerOneTurn) ||	// we are the server and we have won
 	    			(ss == null && !this.playerOneTurn)		// we are the client and we have won
 	    		)
-				Connect4.Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
+				Connect4.accountManager.getConnectedAccount().addPoints(Config.pointsAddedWhenWin); // add the points
     }
     
     /**
@@ -380,7 +384,7 @@ public class GameEngineOnline extends GameEngine{
     public void endGame() {
     	super.endGame();
 
-    	Connect4.Connect4.menu.refreshOnlineSelectionPanel();
+    	Connect4.menu.refreshOnlineSelectionPanel();
     }
     
     /**
