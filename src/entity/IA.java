@@ -37,8 +37,8 @@ public class IA extends Player {
     
     /**
 	 * Setter for a case of the grid.
-         * @param i: postion of the pawn on the y axis
-         * @param j: position of the pawn on the x axis
+         * @param i: position of the pawn on the X axis
+         * @param j: position of the pawn on the Y axis
 	 * @param pawn: the pawn
 	 */
     public void setGrid(int i, int j, Pawn pawn)
@@ -224,8 +224,8 @@ public class IA extends Player {
 	 * This function return a score that represents a part of the current state of his mental game.
          * Called in eval(int x, int y)
          * Check on the X axis if there are nearby pawns and if there are, how many of them are linked together and by whom.
-	 * @param x: position on the X axis from which he should analyze
-         * @param y: position on the Y axis from which he should analyze
+	 * @param i: position on the X axis from which he should analyze
+         * @param j: position on the Y axis from which he should analyze
 	 */
     public int evalLine(int i, int j)
     {
@@ -352,8 +352,8 @@ public class IA extends Player {
 	 * This function return a score that represents a part of the current state of his mental game.
          * Called in eval(int x, int y)
          * Check on the Y axis if there are nearby pawns and if there are, how many of them are linked together and by whom.
-	 * @param x: position on the X axis from which he should analyze
-         * @param y: position on the Y axis from which he should analyze
+	 * @param i: position on the X axis from which he should analyze
+         * @param j: position on the Y axis from which he should analyze
 	 */
     public int evalRow(int i, int j)
     {
