@@ -230,7 +230,7 @@ public class GameEngine extends JPanel implements MouseListener {
                         ((IA)this.player2).setGrid(i, j, grid[i][j]);
 
                 ((IA)this.player2).setNemesis(player1);
-                int XX=((IA)this.player2).jouer(2);
+                int XX=((IA)this.player2).jouer(Config.selectedAIDif);
                 addPawn(XX,new Pawn(getCurrentPlayer()));
             }
         }

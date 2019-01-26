@@ -30,6 +30,7 @@ public class Menu extends JPanel implements ActionListener {
 	
 	// panels
 	private MenuPanel firstPanel;						/** The first panel of the menu. */
+	private MenuPanel AIPanel;							/** The panel of the AI. */
 	private MenuPanel twoPlayersPanel; 					/** The panel when we choose 2 players. */
 	private MenuPanel connectionPanel;					/** The panel to select an online account. */
 	private MenuPanel createAccountPanel;				/** The panel to create an account. */
@@ -74,6 +75,7 @@ public class Menu extends JPanel implements ActionListener {
 		
 		// build all the panel
 		buildFirstPanel();
+		buildAIPanel();
 		buildTwoPlayersPanel();
 		buildConnectionPanel();
 		buildCreateAccountPanel();
@@ -82,6 +84,7 @@ public class Menu extends JPanel implements ActionListener {
 		// add the panels
 		this.setLayout(new CardLayout());
 		this.add("firstPanel", this.firstPanel);
+		this.add("AIPanel", this.AIPanel);
 		this.add("twoPlayersPanel", this.twoPlayersPanel);
 		this.add("connectionPanel", this.connectionPanel);
 		this.add("createAccountPanel", this.createAccountPanel);
@@ -115,6 +118,44 @@ public class Menu extends JPanel implements ActionListener {
 		this.firstPanel.add(bt1Player);
 		this.firstPanel.add(bt2Player);
 		this.firstPanel.add(btNetwork);
+	}
+	
+	/**
+	 * This function builds the AI panel.
+	 */
+	private void buildAIPanel() {
+		this.AIPanel = new MenuPanel();
+		this.AIPanel.setPreferredSize(this.getSize());
+		this.AIPanel.setLayout(null);
+		
+		// create the buttons
+		Button btRetour = new Button("Retour au menu");
+		btRetour.setBounds(20, 20, 150, 30);
+		btRetour.addActionListener(this);
+		
+		JLabel lbDif = new JLabel("Difficulté de l'IA :");
+		lbDif.setBounds(550, 100, 250, 25);
+		lbDif.setForeground(new Color(253, 238, 215));
+		lbDif.setOpaque(false);
+		
+		Button btEasy = new Button("Facile");
+		btEasy.setBounds(550, 130, 250, 40);
+		btEasy.addActionListener(this);
+		
+		Button btMedium = new Button("Moyen");
+		btMedium.setBounds(550, 230, 250, 40);
+		btMedium.addActionListener(this);
+		
+		Button btHard = new Button("Difficile");
+		btHard.setBounds(550, 330, 250, 40);
+		btHard.addActionListener(this);
+		
+		// add them
+		this.AIPanel.add(btRetour);
+		this.AIPanel.add(lbDif);
+		this.AIPanel.add(btEasy);
+		this.AIPanel.add(btMedium);
+		this.AIPanel.add(btHard);
 	}
 	
 	/**
@@ -348,17 +389,29 @@ public class Menu extends JPanel implements ActionListener {
 		Button button = ((Button) e.getSource());
 		
 		// -- in the first panel
-                
-                //Solo player
-                 if(button.getLabel().equals("Un joueur"))
-                {
-                    Connect4.startAGameWithOnePlayer(new Player("Vous", PawnName.BasicPawn1));
-                }
-                
+                         
 		// two players
 		if(button.getLabel().equals("Deux joueurs")) {
 			refreshPlayersPanel();
 			((CardLayout)this.getLayout()).show(this, "twoPlayersPanel");
+		}
+		
+		// solo player panel
+		else if(button.getLabel().equals("Un joueur"))
+			((CardLayout)this.getLayout()).show(this, "AIPanel");
+		
+		// start solo player
+		else if(button.getLabel().equals("Facile") || button.getLabel().equals("Moyen") || button.getLabel().equals("Difficile")) {
+			// change difficulty
+			if(button.getLabel().equals("Facile"))
+				Config.selectedAIDif = Config.easyAIDeeperValue;
+			else if (button.getLabel().equals("Moyen"))
+				Config.selectedAIDif = Config.mediumAIDeeperValue;
+			else
+				Config.selectedAIDif = Config.hardAIDeeperValue;
+
+			// start
+			Connect4.startAGameWithOnePlayer(new Player("Vous", PawnName.BasicPawn1));
 		}
 		
 		// menu

@@ -55,9 +55,10 @@ public class IA extends Player {
         if(j==0 && grid[i][j]!=null) continue;
         if(j==-1) continue;
             grid[i][j] = new Pawn(this);
-            System.out.println(grid[i][j].getOwner().getName());
+            /*System.out.println(grid[i][j].getOwner().getName());
             System.out.println("Position : x = " + i);
             System.out.println("Position : y = " + j);
+            */
             tmp = Min(profondeur-1,i,j);
             //System.out.println("WARNING: " + tmp +" i = " + i);
             if(tmp > max)
@@ -76,7 +77,7 @@ public class IA extends Player {
     {
         if(profondeur == 0 || TheEND(x,y))
      {
-         System.out.println("FIN");
+         //System.out.println("FIN");
           return eval(x,y);
      }
 
@@ -89,9 +90,10 @@ public class IA extends Player {
         if(j==0 && grid[i][j]!=null) continue;
         if(j==-1) continue;
             grid[i][j] = new Pawn(Nemesis);
-            System.out.println(grid[i][j].getOwner().getName());
+            /*System.out.println(grid[i][j].getOwner().getName());
             System.out.println("Position : x = " + i);
             System.out.println("Position : y = " + j);
+            */
             tmp = Max(profondeur-1, i, j);
             if(tmp < min)
             {
@@ -108,7 +110,7 @@ public class IA extends Player {
     {
         if(profondeur == 0 || TheEND(x,y))
      {
-         System.out.println("FIN");
+         // System.out.println("FIN");
           return eval(x,y);
           
      }
@@ -122,9 +124,10 @@ public class IA extends Player {
           if(j==0 && grid[i][j]!=null) continue;
           if(j==-1) continue;
           grid[i][j] = new Pawn(this);
+          /*
           System.out.println(grid[i][j].getOwner().getName());
           System.out.println("Position : x = " + i);
-            System.out.println("Position : y = " + j);
+            System.out.println("Position : y = " + j); */
             tmp = Min(profondeur-1, i, j);
             
             if(tmp > max)
@@ -156,12 +159,13 @@ public class IA extends Player {
              
             eval+= this.evalLine(i, j);
            
-            
+            /*
             System.out.println("Evalutaion");
             System.out.println("Position : x = " + i);
             System.out.println("Position : y = " + j);
+            */
             eval+= this.evalRow(i, j);
-            System.out.println(eval);
+            //System.out.println(eval);
 
             //eval+= this.evalDiagonal(i, j);
 
@@ -204,7 +208,7 @@ public class IA extends Player {
            if(grid[x-a][y]==null)
            {
                //freeL=true;
-               System.out.println("Break Left");
+               // System.out.println("Break Left");
                break;
            }
            if(grid[x-a][y].getOwner()!=null && FirstStep)
@@ -230,7 +234,7 @@ public class IA extends Player {
            if(grid[x+a][y]==null)
            {
                //freeR=true;
-               System.out.println("Break Right");
+               // System.out.println("Break Right");
                break;
            }
            if(!FirstStep && grid[x+a][y].getOwner().getName().equals(grid[x+a-1][y].getOwner().getName()))
@@ -252,7 +256,7 @@ public class IA extends Player {
        
        if(joueur!=null)
        {
-           System.out.println(joueur);
+           //System.out.println(joueur);
             int compt = compt1 + compt2;
             if(compt>=4) eval = 10000; 
             else{
@@ -264,7 +268,7 @@ public class IA extends Player {
        }
        if(joueur2!=null)
        {
-           System.out.println(joueur);
+           // System.out.println(joueur);
             int compt = compt1 + compt2;
             if(compt>=4) eval = 10000; 
             else{

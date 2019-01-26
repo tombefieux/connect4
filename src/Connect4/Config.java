@@ -44,6 +44,12 @@ public class Config {
 	public final static int nbOfGameToDeblockANewPawn = 3;
 	public final static int nbOfBasicPawns = 2;
 	
+	// AI
+	public final static int easyAIDeeperValue = 2;
+	public final static int mediumAIDeeperValue = 4;
+	public final static int hardAIDeeperValue = 6;
+	public static int selectedAIDif= easyAIDeeperValue;
+	
 	/**
 	 * This function returns the path of a pawn with its name and if it's highlighted or not.
 	 * @param name: the name of the pawn
