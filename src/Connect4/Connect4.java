@@ -12,7 +12,6 @@ import engine.GameEngineOnline;
 import entity.Player;
 import graphics.MainWindow;
 import graphics.Menu;
-import graphics.PawnSelector;
 
 public class Connect4 {
 	
@@ -20,10 +19,20 @@ public class Connect4 {
 	public static Menu menu;
 	public static AccountManager accountManager;
 	public static MainWindow window;
-	public static PawnSelector selector;
 	
 	public static boolean anEngineIsRunning = false;
 	
+        
+        public static void startAGameWithOnePlayer(Player player1)
+        {
+            GameEngine engine = new GameEngine(Config.GRID_WIDTH, Config.GRID_HEIGHT);
+            window.switchToPanel(engine);
+            engine.startSolo(player1);
+            
+            // start the game in a thread
+            runAnEngine(engine);
+        }
+        
 	/**
 	 * This function starts a game with two players.
 	 * @param player1: the first player.
@@ -116,14 +125,11 @@ public class Connect4 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		// init
+		// we set the menu as panel to draw
 		accountManager = new AccountManager();
-		selector = new PawnSelector();
 		menu = new Menu();
 		window = new MainWindow();
 		
-		// we set the menu as panel to draw
 		window.switchToPanel(menu);
 		window.setVisible(true);
 	}
